@@ -1,0 +1,65 @@
+{% extends "matches/base.html" %}
+{% load static %}
+
+{% block title %}Jogos do Dia — StatsGreen{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <form class="toolbar" method="get">
+    <label for="date-filter">📅 Data:</label>
+    <input id="date-filter" type="date" name="data" value="{{ data_selecionada }}">
+    <button type="submit">Buscar Jogos</button>
+  </form>
+
+  {% if jogos_por_liga %}
+    {% for liga, jogos in jogos_por_liga.items %}
+      <div class="league-card">
+        
+        <div class="league-header">
+            <h3 class="league-title">{{ liga }}</h3>
+            <span>⚽</span>
+        </div>
+
+        {% for jogo in jogos %}
+          <div class="match-row">
+            
+            <div class="match-time">
+                {{ jogo.hora }}
+            </div>
+
+            <div class="match-teams">
+              <a href="{% url 'analise_jogo' %}?home={{ jogo.home }}&away={{ jogo.away }}&liga={{ jogo.liga }}&hora={{ jogo.hora }}&data={{ data_selecionada }}&odd_h={{ jogo.Odd_H }}&odd_d={{ jogo.Odd_D }}&odd_a={{ jogo.Odd_A }}">
+                  {{ jogo.home }} <span class="vs">vs</span> {{ jogo.away }}
+              </a>
+            </div>
+
+            <div class="odds">
+               <span class="odd" title="Casa">{{ jogo.Odd_H }}</span>
+               <span class="odd" title="Empate">{{ jogo.Odd_D }}</span>
+               <span class="odd" title="Fora">{{ jogo.Odd_A }}</span>
+            </div>
+
+            <a class="analyze-btn" 
+              href="{% url 'analise_jogo' %}?home={{ jogo.home }}&away={{ jogo.away }}&liga={{ jogo.liga }}&hora={{ jogo.hora }}&data={{ data_selecionada }}&odd_h={{ jogo.Odd_H }}&odd_d={{ jogo.Odd_D }}&odd_a={{ jogo.Odd_A }}">
+              Analisar
+            </a>
+
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+
+  {% else %}
+    <div style="text-align: center; padding: 50px; color: #666; background: var(--card-bg); border-radius: 10px;">
+        <h3>Nenhum jogo encontrado para esta data 😴</h3>
+        <p>Certifique-se de que o arquivo CSV existe na pasta <code>jogos_do_dia</code>.</p>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

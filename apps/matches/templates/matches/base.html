@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}StatsGreen ⚽{% endblock %}</title>
+    {% load static %}
+    <link rel="icon" href="{% static 'img/favicon.png' %}">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0d0d0d;
+            --card-bg: #1b1b1b;
+            --border-color: #333;
+            --text-primary: #f5f5f5;
+            --text-secondary: #bbbbbb;
+            --accent-primary: #ff4d00;
+            --accent-green: #4caf50;
+            --accent-red: #f44336;
+            --accent-blue: #2196f3;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: 'Roboto', sans-serif;
+        }
+
+        header {
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            color: var(--accent-primary);
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        header h1::after {
+            content: " ⚽";
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 0;
+        }
+
+        main {
+            min-height: 80vh;
+            padding: 1rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 2rem;
+        }
+
+        a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        a:hover {
+            color: #ffa066;
+        }
+
+        button {
+            background-color: var(--accent-primary);
+            color: #fff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #ff7033;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 1rem 0;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.6rem;
+            }
+            main {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+    <header>
+        <h1>StatsGreen</h1>
+        <p>Plataforma de Análises Preditivas de Futebol</p>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>© {% now "Y" %} StatsGreen — Todos os direitos reservados ⚽</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+
+            if (tabs.length > 0 && contents.length > 0) {
+                // Função para ativar aba
+                function activateTab(index) {
+                    // Remove active de todos
+                    tabs.forEach(t => t.classList.remove('active'));
+                    contents.forEach(c => c.classList.remove('active'));
+                    
+                    // Adiciona active no selecionado
+                    if(tabs[index]) tabs[index].classList.add('active');
+                    if(contents[index]) contents[index].classList.add('active');
+                }
+
+                // Adiciona evento de click
+                tabs.forEach((tab, index) => {
+                    tab.addEventListener('click', () => activateTab(index));
+                });
+
+                // Ativa a primeira aba por padrão
+                activateTab(0);
+            }
+        });
+    </script>
+</body>
+</html>

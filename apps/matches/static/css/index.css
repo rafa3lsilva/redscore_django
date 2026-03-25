@@ -1,0 +1,93 @@
+.container { max-width: 980px; margin: 0 auto; padding: 20px; }
+
+/* Filtro */
+.toolbar {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 15px; margin-bottom: 25px;
+  display: flex; gap: 15px; align-items: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+.toolbar input[type="date"] {
+  background: #111; color: #fff; border: 1px solid #444; 
+  padding: 8px; border-radius: 5px;
+}
+.toolbar button {
+  background: var(--accent-primary); color: white; border: none;
+  padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;
+}
+
+/* Liga Card */
+.league-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 10px; margin-bottom: 20px;
+  overflow: hidden;
+}
+
+/* Cabeçalho da Liga */
+.league-header {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.league-title {
+  margin: 0; color: var(--accent-primary); 
+  font-size: 1.1rem; font-weight: 700; text-transform: uppercase;
+}
+
+/* Linha do Jogo */
+.match-row {
+  display: grid;
+  /* Colunas: Hora | Times | Odds | Botão */
+  grid-template-columns: 70px 1fr auto 100px;
+  align-items: center;
+  padding: 15px 18px;
+  border-bottom: 1px solid #2a2a2a;
+  transition: background 0.2s;
+  gap: 15px;
+}
+.match-row:hover { background-color: rgba(255,255,255,0.03); }
+.match-row:last-child { border-bottom: none; }
+
+/* Hora */
+.match-time {
+  font-family: monospace; font-size: 1.1rem; 
+  color: var(--text-secondary); font-weight: bold;
+  text-align: center; background: #111; padding: 4px; border-radius: 4px;
+}
+
+/* Times */
+.match-teams {
+  font-size: 1.05rem; font-weight: 500; color: #fff;
+}
+.match-teams a { text-decoration: none; color: inherit; }
+.match-teams a:hover { color: var(--accent-blue); }
+.vs { color: #555; margin: 0 5px; font-size: 0.9rem; }
+
+/* Odds */
+.odds { display: flex; gap: 6px; }
+.odd { 
+  background: #222; color: #ddd; border: 1px solid #333;
+  padding: 5px 8px; border-radius: 4px; font-size: 0.85rem; 
+  min-width: 45px; text-align: center;
+}
+
+/* Botão */
+.analyze-btn {
+  background: transparent; color: var(--accent-green);
+  border: 1px solid var(--accent-green);
+  padding: 6px 0; border-radius: 5px;
+  text-align: center; text-decoration: none; font-size: 0.9rem;
+  transition: all 0.2s; display: block;
+}
+.analyze-btn:hover { background: var(--accent-green); color: #fff; }
+
+/* Mobile */
+@media(max-width: 600px) {
+  .match-row { grid-template-columns: 60px 1fr; grid-template-rows: auto auto; gap: 10px; }
+  .odds { grid-column: 1 / -1; justify-content: flex-start; margin-top: 5px; }
+  .analyze-btn { grid-column: 2; grid-row: 2; justify-self: end; width: auto; padding: 6px 15px; }
+}

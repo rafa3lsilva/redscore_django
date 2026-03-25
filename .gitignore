@@ -1,0 +1,29 @@
+# Python / Django genéricos
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+env.bak/
+venv.bak/
+
+# Variáveis de ambiente
+.env
+.env.*
+
+# Banco SQLite local
+db.sqlite3
+db.sqlite3-journal
+
+# Arquivos estáticos coletados
+staticfiles/
+static_root/
+
+# Logs e IDEs
+*.log
+.vscode/
+.idea/
+.DS_Store
