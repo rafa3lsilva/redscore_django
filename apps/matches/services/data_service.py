@@ -27,7 +27,7 @@ def get_historico():
             # Consulta na tabela manual 'dados_redscore' (histórico)
             query = """
                 SELECT "Data" as data, "Home" as home, "Away" as away, 
-                       "League" as liga, "H_Gols_FT" as h_gols_ft, 
+                       "Liga" as liga, "H_Gols_FT" as h_gols_ft, 
                        "A_Gols_FT" as a_gols_ft, "H_Gols_HT" as h_gols_ht, 
                        "A_Gols_HT" as a_gols_ht, "H_Escanteios" as h_escanteios, 
                        "A_Escanteios" as a_escanteios 
