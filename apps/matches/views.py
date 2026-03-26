@@ -185,8 +185,9 @@ def analise_jogo(request):
             context['analise']['ia'] = preds
             print(f"✅ Resultado IA: {preds}")
         except Exception as e:
-            print(f"❌ Erro na IA: {e}")
-            context['analise']['ia'] = {'erro': 'Erro ao processar IA'}
+            msg = f"Erro ao processar IA: {e}"
+            print(f"❌ {msg}")
+            context['analise']['ia'] = {'erro': msg}
             context['mostrar_form_odds'] = True
     else:
         print("⚠️ Odds ausentes ou inválidas")
