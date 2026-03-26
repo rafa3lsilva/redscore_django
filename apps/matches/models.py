@@ -9,6 +9,7 @@ class JogoDoDia(models.Model):
     odd_h = models.FloatField(blank=True, null=True)
     odd_d = models.FloatField(blank=True, null=True)
     odd_a = models.FloatField(blank=True, null=True)
+    link_confronto = models.TextField(blank=True, null=True)
 
     class Meta:
         verbose_name = "Jogo do Dia"
