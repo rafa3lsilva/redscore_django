@@ -21,11 +21,24 @@ def get_historico():
     if cached_df is not None:
         return cached_df
 
-    # Ler diretamente da tabela do banco de dados invés do arquivo CSV
-    from apps.matches.models import Historico
+    from django.db import connection
     try:
-        qs = Historico.objects.all().values()
-        df = pd.DataFrame.from_records(qs)
+        with connection.cursor() as cursor:
+            # Consulta na tabela manual 'dados_redscore' (histórico)
+            query = """
+                SELECT "Data" as data, "Home" as home, "Away" as away, 
+                       "League" as liga, "H_Gols_FT" as h_gols_ft, 
+                       "A_Gols_FT" as a_gols_ft, "H_Gols_HT" as h_gols_ht, 
+                       "A_Gols_HT" as a_gols_ht, "H_Escanteios" as h_escanteios, 
+                       "A_Escanteios" as a_escanteios 
+                FROM dados_redscore
+            """
+            cursor.execute(query)
+            columns = [col[0].lower() for col in cursor.description]
+            records = cursor.fetchall()
+            
+        df = pd.DataFrame.from_records(records, columns=columns)
+        
         if df.empty:
             return df
             
