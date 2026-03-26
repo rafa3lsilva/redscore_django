@@ -4,9 +4,14 @@ import pandas as pd
 from .ia_features import calcular_stats_time, calcular_media_liga
 
 
-MODEL_PATH = "apps/matches/services/modelo_redscore_v2.pkl"
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, "modelo_redscore_v2.pkl")
 
 try:
+    if not os.path.exists(MODEL_PATH):
+        raise FileNotFoundError(f"Arquivo não encontrado: {MODEL_PATH}")
     BUNDLE = joblib.load(MODEL_PATH)
     IA_MODEL = BUNDLE["model"]
     FEATURE_NAMES = BUNDLE["features"]
