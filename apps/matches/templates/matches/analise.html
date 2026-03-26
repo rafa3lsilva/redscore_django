@@ -94,6 +94,12 @@
 
     <!-- TAB 1: RESUMO -->
     <div class="tab-content active">
+        {% if analise.ia.erro %}
+            <div style="background: rgba(244, 67, 54, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 10px; border-radius: 6px; margin-bottom: 20px; font-size: 0.8em; text-align: center;">
+                ⚠️ <strong>Erro IA:</strong> {{ analise.ia.erro }}
+            </div>
+        {% endif %}
+
         <div class="prediction-summary">
             {% if analise.ia and not analise.ia.erro %}
                 <div class="prob-card home-win">

@@ -9,6 +9,8 @@ import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "modelo_redscore_v2.pkl")
 
+MODEL_ERROR = None
+
 try:
     if not os.path.exists(MODEL_PATH):
         raise FileNotFoundError(f"Arquivo não encontrado: {MODEL_PATH}")
@@ -16,6 +18,7 @@ try:
     IA_MODEL = BUNDLE["model"]
     FEATURE_NAMES = BUNDLE["features"]
 except Exception as e:
+    MODEL_ERROR = str(e)
     print(f"⚠️ Erro ao carregar modelo IA. Certifique-se de que o arquivo pkl existe: {e}")
     BUNDLE = None
     IA_MODEL = None
@@ -46,7 +49,7 @@ def calcular_probabilidades_ia(
     peso_recente: int = 50
 ):
     if IA_MODEL is None:
-        return {'erro': 'Modelo de IA não disponível'}
+        return {'erro': f'Modelo de IA não disponível: {MODEL_ERROR}'}
     
     model = IA_MODEL
     feature_names = FEATURE_NAMES
