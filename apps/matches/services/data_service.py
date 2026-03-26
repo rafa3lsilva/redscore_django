@@ -85,12 +85,28 @@ def carregar_jogos_do_dia(data_selecionada_str=None):
         df = pd.DataFrame.from_records(records, columns=columns)
         
         if df.empty:
-            return df
+            # RETORNO DE DIAGNÓSTICO (ZERO LINHAS)
+            return pd.DataFrame([{
+                'liga': 'DIAGNÓSTICO SQL',
+                'home': f"Nenhum jogo retornado pelo banco",
+                'away': f"Data pesquisada: {data_selecionada_str}",
+                'hora': '00:00',
+                'odd_h': 0, 'odd_d': 0, 'odd_a': 0
+            }])
             
         cache.set(cache_key, df, timeout=300)
         return df
         
     except Exception as e:
-        print(f"❌ Erro lendo jogos do dia do banco de dados (tabela jogos_do_dia): {e}")
+        error_msg = str(e)
+        print(f"❌ Erro lendo jogos do dia do banco de dados (tabela jogos_do_dia): {error_msg}")
+        # RETORNO DE DIAGNÓSTICO (ERRO)
+        return pd.DataFrame([{
+            'liga': 'ERRO SQL NO BANCO',
+            'home': error_msg[:100],
+            'away': '...',
+            'hora': '00:00',
+            'odd_h': 0, 'odd_d': 0, 'odd_a': 0
+        }])
         
     return pd.DataFrame()
