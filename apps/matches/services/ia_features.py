@@ -37,7 +37,7 @@ def calcular_stats_time(df, team, data):
 
 
 def calcular_media_liga(df, liga, data):
-    df_l = df[(df['Liga'] == liga) & (df['Data'] < data)].sort_values('Data').tail(WINDOW)
+    df_l = df[(df['League'] == liga) & (df['Data'] < data)].sort_values('Data').tail(WINDOW)
 
     if len(df_l) < WINDOW:
         return None
