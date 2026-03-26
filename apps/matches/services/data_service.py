@@ -66,21 +66,31 @@ def carregar_jogos_do_dia(data_selecionada_str=None):
     if cached_df is not None:
         return cached_df
 
-    from apps.matches.models import JogoDoDia
+    from django.db import connection
     
     try:
-        qs = JogoDoDia.objects.filter(data=data_selecionada_str).values()
-        df = pd.DataFrame.from_records(qs)
+        with connection.cursor() as cursor:
+            # Query the user's custom table exactly as it is in Supabase
+            query = """
+                SELECT data, liga, hora, home, away, 
+                       "Odd_H" as odd_h, "Odd_D" as odd_d, "Odd_A" as odd_a, 
+                       link_confronto 
+                FROM jogos_do_dia 
+                WHERE data = %s
+            """
+            cursor.execute(query, [data_selecionada_str])
+            columns = [col[0].lower() for col in cursor.description]
+            records = cursor.fetchall()
+            
+        df = pd.DataFrame.from_records(records, columns=columns)
         
         if df.empty:
             return df
             
-        # As views.py já esperavam tudo minusculo graças ao normalizador antigo,
-        # O DataFrame do model (que já é lowercase nos fields) será perfeitamente compatível!
         cache.set(cache_key, df, timeout=300)
         return df
         
     except Exception as e:
-        print(f"❌ Erro lendo jogos do dia do banco de dados: {e}")
+        print(f"❌ Erro lendo jogos do dia do banco de dados (tabela jogos_do_dia): {e}")
         
     return pd.DataFrame()
