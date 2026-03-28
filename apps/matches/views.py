@@ -20,7 +20,8 @@ def pagina_inicial(request):
         
         # Itera linha a linha preservando a ordem do CSV
         for _, row in df_jogos.iterrows():
-            liga = row.get('liga', 'Outros')
+            liga = row.get('liga', 'hora', 'Outros')
+
             # Tratamento da hora para ficar bonita (10:30 em vez de 10:30:00)
             hora_raw = row.get('hora') or row.get('time') or '--:--'
             hora_str_upper = str(hora_raw).strip().upper()
