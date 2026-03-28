@@ -7,105 +7,13 @@
     {% load static %}
     <link rel="icon" href="{% static 'img/favicon.png' %}">
     
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Modern Typography: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <style>
-        :root {
-            --bg-dark: #0d0d0d;
-            --card-bg: #1b1b1b;
-            --border-color: #333;
-            --text-primary: #f5f5f5;
-            --text-secondary: #bbbbbb;
-            --accent-primary: #ff4d00;
-            --accent-green: #4caf50;
-            --accent-red: #f44336;
-            --accent-blue: #2196f3;
-        }
-
-        body {
-            margin: 0;
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
-            font-family: 'Roboto', sans-serif;
-        }
-
-        header {
-            text-align: center;
-            padding: 1rem 0;
-        }
-
-        header h1 {
-            font-size: 2rem;
-            color: var(--accent-primary);
-            font-weight: 700;
-            margin-bottom: 0.3rem;
-        }
-
-        header h1::after {
-            content: " ⚽";
-        }
-
-        header p {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            margin-top: 0;
-        }
-
-        main {
-            min-height: 80vh;
-            padding: 1rem;
-        }
-
-        footer {
-            text-align: center;
-            padding: 1rem;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            border-top: 1px solid var(--border-color);
-            margin-top: 2rem;
-        }
-
-        a {
-            color: var(--accent-primary);
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-
-        a:hover {
-            color: #ffa066;
-        }
-
-        button {
-            background-color: var(--accent-primary);
-            color: #fff;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }
-
-        button:hover {
-            background-color: #ff7033;
-        }
-
-        hr {
-            border: 0;
-            height: 1px;
-            background-color: var(--border-color);
-            margin: 1rem 0;
-        }
-
-        /* Responsividade */
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 1.6rem;
-            }
-            main {
-                padding: 0.5rem;
-            }
-        }
-    </style>
+    <!-- Global Stylesheet -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
 
     {% block extra_head %}{% endblock %}
 </head>
