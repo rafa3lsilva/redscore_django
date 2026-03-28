@@ -1,242 +1,202 @@
 /* =========================================
-   STATSGREEN - ESTILOS DA ANÁLISE (V5.0 Premium)
+   STATSGREEN - ESTILOS DA ANÁLISE (V2.0)
    ========================================= */
 
+/* --- Animações Globais --- */
 .analysis-container {
-    max-width: 1200px;
+    max-width: 1100px;
     margin: 0 auto;
     padding: 20px;
-    animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 @keyframes slideUp {
-    from { opacity: 0; transform: translateY(40px); }
+    from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 /* =========================================
-   1. CABEÇALHO DO JOGO
+   1. CABEÇALHO DO JOGO (NOVO LAYOUT)
    ========================================= */
 .match-header {
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border);
-    border-radius: 24px;
-    padding: 3rem 2rem;
-    margin-bottom: 2.5rem;
-    position: relative;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    background: var(--card-bg); /* Fundo cinza escuro */
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    margin-bottom: 2rem;
+    position: relative; /* Necessário para posicionar botões absolutos */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     text-align: center;
 }
 
+/* Botão Voltar (Canto Superior Esquerdo) */
 .back-btn {
     position: absolute;
-    top: 24px;
-    left: 24px;
+    top: 20px;
+    left: 20px;
     text-decoration: none;
     color: var(--text-secondary);
-    font-size: 0.85rem;
-    padding: 8px 18px;
+    font-size: 0.9rem;
+    padding: 8px 16px;
     border: 1px solid var(--border-color);
-    border-radius: 12px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    background: rgba(255,255,255,0.03);
-    font-weight: 600;
+    border-radius: 20px;
+    transition: all 0.2s;
 }
 .back-btn:hover {
-    background-color: var(--accent-primary);
+    background-color: var(--border-color);
     color: white;
-    border-color: var(--accent-primary);
-    transform: translateX(-3px);
 }
 
+/* Selo do Modelo (Canto Superior Direito) */
 .model-pill {
     position: absolute;
-    top: 24px;
-    right: 24px;
-    background: rgba(59, 130, 246, 0.1);
+    top: 20px;
+    right: 20px;
+    background: rgba(33, 150, 243, 0.1);
     color: var(--accent-blue);
-    border: 1px solid rgba(59, 130, 246, 0.2);
+    border: 1px solid var(--accent-blue);
     padding: 6px 14px;
-    border-radius: 10px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 1px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
 }
 
+/* Informações da Liga (Centro Topo) */
 .league-info {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-bottom: 2.5rem;
+    gap: 6px;
+    margin-bottom: 2rem;
 }
 
 .league-name {
-    color: var(--accent-primary);
-    font-size: 1rem;
+    color: var(--accent-primary); /* Laranja */
+    font-size: 0.9rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
 }
 
 .match-datetime {
     color: var(--text-secondary);
     font-size: 0.9rem;
-    font-weight: 500;
-    opacity: 0.8;
+    font-family: monospace; /* Fonte estilo relógio */
 }
 
+/* O Confronto (Times e VS) */
 .match-versus {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 50px;
+    gap: 40px; /* Espaço entre times */
 }
 
 .team-name {
-    font-size: 2.8rem;
+    font-size: 2.2rem;
     font-weight: 800;
     color: var(--text-primary);
-    line-height: 1.1;
-    max-width: 400px;
+    line-height: 1.2;
 }
 
 .vs-badge {
-    background: linear-gradient(135deg, #252528, #18181b);
-    color: var(--text-secondary);
-    width: 60px;
-    height: 60px;
+    background-color: #252525;
+    color: #666;
+    width: 45px;
+    height: 45px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 20px;
+    border-radius: 50%;
     font-weight: 900;
-    font-size: 1.1rem;
-    border: 1px solid var(--border-color);
-    transform: rotate(45deg);
-    flex-shrink: 0;
+    font-size: 0.9rem;
+    border: 2px solid #333;
+    flex-shrink: 0; /* Impede que o círculo amasse */
 }
 
-.vs-badge span { transform: rotate(-45deg); }
 
 /* =========================================
-   2. FILTROS E CONTROLES (REFATORADO)
+   2. RESUMO DA PREVISÃO (PROBABILIDADES)
    ========================================= */
-.filter-form {
-    padding: 24px;
-    border-radius: 20px;
-    margin: 2rem 0;
-}
-
-.filter-controls {
+.prediction-summary {
     display: flex;
-    flex-wrap: wrap;
-    gap: 24px;
-    align-items: flex-end;
+    gap: 15px;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px dashed var(--border-color);
     justify-content: center;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border-color);
 }
 
-.filter-group {
+.prob-card {
+    flex: 1;
+    background: rgba(255,255,255,0.05); /* Fundo um pouco mais claro */
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color); /* Borda sutil em volta de tudo */
+    
+    /* CENTRALIZAÇÃO TOTAL */
     display: flex;
     flex-direction: column;
-    gap: 8px;
-}
-
-.filter-group label {
-    color: var(--text-secondary);
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.filter-group label span {
-    color: var(--accent-primary);
-    margin-left: 5px;
-}
-
-.custom-select {
-    padding: 10px 15px;
-    border-radius: 10px;
-    background: var(--card-bg);
-    color: white;
-    border: 1px solid var(--border-color);
-    cursor: pointer;
-    font-family: inherit;
-    font-weight: 500;
-    outline: none;
-    transition: all 0.2s;
-}
-
-.custom-select:focus { border-color: var(--accent-primary); }
-
-.btn-filter {
-    background: var(--accent-primary);
-    color: white;
-    padding: 10px 25px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.filter-note {
-    color: var(--text-secondary);
-    font-size: 0.8rem;
-    margin: 15px 0 0 0;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    opacity: 0.6;
+    
+    transition: transform 0.2s;
+    max-width: 180px;
 }
 
-/* Range input styling */
-input[type="range"] {
-    -webkit-appearance: none;
-    width: 160px;
-    height: 6px;
-    background: #333;
-    border-radius: 5px;
-    outline: none;
+.prob-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255,255,255,0.08);
 }
-input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
-    background: var(--accent-primary);
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid white;
+
+/* Cores específicas para as caixas */
+.prob-card.home-win { border-bottom: 3px solid var(--accent-green); }
+.prob-card.draw     { border-bottom: 3px solid #ffa000; }
+.prob-card.away-win { border-bottom: 3px solid var(--accent-red); }
+
+.prob-label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+    text-transform: uppercase;
 }
+
+.prob-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: white;
+}
+.prob-value span { font-size: 1rem; color: #888; }
 
 /* =========================================
-   3. ABAS E NAVEGAÇÃO
+   3. ABAS DE NAVEGAÇÃO
    ========================================= */
 .tabs-nav {
     display: flex;
     justify-content: center;
-    gap: 8px;
-    margin: 2rem auto;
+    gap: 10px;
+    margin-bottom: 25px;
     background: var(--card-bg);
     padding: 8px;
-    border-radius: 16px;
-    max-width: fit-content;
+    border-radius: 12px;
+    display: inline-flex; /* Fica do tamanho do conteúdo */
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .tab {
     background: none;
     border: none;
     color: var(--text-secondary);
-    padding: 12px 20px;
-    border-radius: 10px;
+    padding: 10px 24px;
+    border-radius: 8px;
     cursor: pointer;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+    transition: all 0.2s;
 }
 
 .tab:hover { color: white; background: rgba(255,255,255,0.05); }
@@ -244,116 +204,385 @@ input[type="range"]::-webkit-slider-thumb {
 .tab.active {
     background-color: var(--accent-primary);
     color: white;
-    box-shadow: 0 8px 20px rgba(255, 92, 0, 0.3);
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(255, 77, 0, 0.3);
 }
 
 /* =========================================
-   4. CARDS E INSIGHTS
+   4. GRIDS DE ESTATÍSTICAS
    ========================================= */
-.prob-card {
-    flex: 1;
-    background: var(--card-bg);
-    padding: 24px;
-    border-radius: 20px;
-    border: 1px solid var(--border-color);
-    text-align: center;
-    transition: all 0.3s ease;
-    max-width: 220px;
-}
-
-.prob-card:hover { transform: translateY(-8px); border-color: rgba(255,255,255,0.2); }
-
-.prob-value { font-size: 2.2rem; font-weight: 800; }
-.prob-value span { font-size: 1.1rem; opacity: 0.5; }
-
-.insight-badge {
-    padding: 20px;
-    border-radius: 16px;
-    margin-bottom: 25px;
-    border-left: 6px solid transparent;
-}
-
-.favorite-home { background: linear-gradient(90deg, rgba(34, 197, 94, 0.1), transparent); border-color: var(--accent-green); }
-.favorite-away { background: linear-gradient(90deg, rgba(239, 68, 68, 0.1), transparent); border-color: var(--accent-red); }
-.favorite-draw { background: linear-gradient(90deg, rgba(251, 191, 36, 0.1), transparent); border-color: #fbbf24; }
-
-.insight-label { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-secondary); }
-.insight-title { margin-top: 5px; font-size: 1.4rem; font-weight: 800; }
-
-/* =========================================
-   5. HISTÓRICO E TABELAS
-   ========================================= */
-.historic-scores-grid {
+.stats-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    margin-top: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Era 240px -> 180px para ficarem menores e mais juntos */
+    gap: 15px; /* Era 20px */
+    margin-bottom: 25px; /* Era 30px */
 }
 
-.score-item {
+.stat-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px; /* Reduzido de 12px */
+    padding: 12px; /* Reduzido de 15px */
+    text-align: center;
+}
+
+.card-title {
+    font-size: 0.75rem; /* Reduzido de 0.85rem */
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 8px; /* Reduzido de 12px */
+    letter-spacing: 0.5px;
+}
+
+/* Números Grandes */
+.metric-big {
+    font-size: 1.8rem; /* Reduzido drasticamente de 2.2rem */
+    font-weight: 700;
+    margin: 5px 0; /* Reduzido */
+    color: white;
+}
+
+/* Texto pequeno abaixo do número */
+.metric-sub {
+    font-size: 0.75rem; /* Reduzido de 0.85rem */
+    color: #777;
+}
+
+/* Cores Tabela History */
+.highlight-green { color: var(--accent-green) !important; font-weight: bold; }
+.highlight-red { color: var(--accent-red) !important; font-weight: bold; }
+.highlight-blue { color: var(--accent-blue) !important; font-weight: bold; }
+
+/* Cores utilitárias */
+.green { color: var(--accent-green); }
+.red   { color: var(--accent-red); }
+.blue  { color: var(--accent-blue); }
+
+/* =========================================
+   5. GRÁFICOS (DONUT & BARRAS)
+   ========================================= */
+.donut-chart {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    margin: 0 auto 15px auto;
+    position: relative;
+    /* O background (gradiente) vem inline do HTML */
+}
+
+.donut-hole {
+    width: 100px;
+    height: 100px;
+    background-color: var(--card-bg); /* Cobre o centro para virar rosca */
+    border-radius: 50%;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.percentage-label { font-size: 1.4rem; font-weight: bold; color: white; }
+.percentage-sub { font-size: 0.75rem; color: #888; }
+
+/* Barras de Progresso */
+.progress-container {
+    width: 100%;
+    background-color: #333;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+.progress-bar {
+    height: 100%;
+    border-radius: 5px;
+    /* A largura (width) vem inline do HTML */
+}
+
+/* =========================================
+   6. RESPONSIVIDADE (MOBILE)
+   ========================================= */
+@media (max-width: 768px) {
+    .match-header {
+        padding: 1.5rem;
+    }
+
+    /* No celular, os botões deixam de ser absolutos e viram bloco */
+    .back-btn, .model-pill {
+        position: static;
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+    
+    .match-versus {
+        flex-direction: column; /* Times um embaixo do outro */
+        gap: 10px;
+    }
+    
+    .vs-badge {
+        margin: 5px 0;
+        transform: scale(0.8);
+    }
+    
+    .team-name {
+        font-size: 1.6rem;
+    }
+
+    .prediction-summary {
+        flex-direction: column; /* Probabilidades empilhadas */
+    }
+    .prob-card {
+        max-width: 100%;
+    }
+    
+    .tabs-nav {
+        width: 100%;
+        overflow-x: auto; /* Rolagem horizontal se tiver muitas abas */
+        justify-content: flex-start;
+        border-radius: 0;
+        background: transparent;
+    }
+    .tab {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+
+}
+
+/* =========================================
+   7. INPUT MANUAL DE ODDS (IA)
+   ========================================= */
+
+.manual-odds-box {
+    margin-top: 25px;
+    padding: 20px;
+    background: rgba(255, 152, 0, 0.06);
+    border: 1px dashed rgba(255, 152, 0, 0.4);
+    border-radius: 12px;
+    text-align: center;
+    animation: fadeIn 0.4s ease;
+}
+
+.manual-odds-form {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.manual-odds-form input[type="number"] {
+    width: 90px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+    color: white;
+    font-size: 0.95rem;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.manual-odds-form input::placeholder {
+    color: #777;
+    font-size: 0.8rem;
+}
+
+.manual-odds-form input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.25);
+    background-color: #1e1e1e;
+}
+
+/* Remove setinhas do input number */
+.manual-odds-form input::-webkit-outer-spin-button,
+.manual-odds-form input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.manual-odds-form input[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* Botão recalcular IA */
+.manual-odds-form .btn-primary {
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(135deg, var(--accent-blue), #1976d2);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(33,150,243,0.3);
+}
+
+.manual-odds-form .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(33,150,243,0.45);
+}
+
+.manual-odds-form .btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 8px rgba(33,150,243,0.3);
+}
+
+/* =========================================
+   8. COMPONENTES V5 (Abas Expandidas)
+   ========================================= */
+
+/* Nova estrutura de Tabs (Scroll horizontal) */
+.tabs-scrollable {
+    display: flex;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 5px;
+}
+.tabs-scrollable::-webkit-scrollbar { height: 5px; }
+.tabs-scrollable::-webkit-scrollbar-thumb { background: var(--accent-primary); border-radius: 5px; }
+.tabs-scrollable::-webkit-scrollbar-track { background: var(--bg-dark); }
+
+.tab-scroll-btn {
+    flex-shrink: 0;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+}
+.tab-scroll-btn.active {
+    color: var(--accent-primary);
+    border-bottom-color: var(--accent-primary);
+}
+.tab-scroll-btn:hover:not(.active) { color: white; }
+
+/* Sections Internas */
+.content-section {
+    background-color: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+    animation: fadeIn 0.4s ease;
+}
+
+.content-section h3 {
+    color: white;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.4em;
+    border-bottom: 1px dashed var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.info-text {
+    font-size: 0.95em;
+    color: var(--text-secondary);
+    margin-bottom: 1.2rem;
+    line-height: 1.5;
+}
+
+/* Data Tables */
+.data-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    min-width: 600px;
+    font-size: 0.95rem;
+}
+.data-table th, .data-table td {
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    text-align: left;
+    color: var(--text-primary);
+}
+.data-table th {
+    background-color: rgba(0,0,0,0.3);
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+.data-table tr:nth-child(even) { background-color: rgba(255,255,255,0.02); }
+.data-table tr:hover { background-color: rgba(255,255,255,0.05); }
+
+.highlight-green { color: var(--accent-green); font-weight: bold; }
+.highlight-red { color: var(--accent-red); font-weight: bold; }
+.highlight-blue { color: var(--accent-blue); font-weight: bold; }
+
+/* Slider IA Peso */
+.ia-slider-container {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ia-slider-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(255,255,255,0.03);
-    padding: 12px 16px;
-    border-radius: 10px;
-    border-left: 4px solid var(--accent-primary);
-    margin-bottom: 10px;
 }
 
-.score-value { font-weight: 800; font-size: 1.2rem; }
-.score-stats { font-size: 0.9rem; color: var(--text-secondary); }
-.score-pct { font-weight: 700; color: var(--accent-primary); margin-left: 5px; }
-
-/* Legibilidade Tabelas */
-.data-table th { padding: 15px; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; }
-.data-table td { padding: 14px 15px; }
-
-/* =========================================
-   6. RESPONSIVIDADE
-   ========================================= */
-@media (max-width: 900px) {
-    .match-versus { gap: 20px; }
-    .team-name { font-size: 1.8rem; }
-    .historic-scores-grid { grid-template-columns: 1fr; }
+.ia-slider-header h4 {
+    margin: 0;
+    color: var(--accent-primary);
+    font-size: 1rem;
 }
 
-@media (max-width: 600px) {
-    .match-header { padding: 4rem 1.5rem 2rem 1.5rem; }
-    .back-btn { top: 15px; left: 15px; }
-    .model-pill { top: 15px; right: 15px; }
-    .team-name { font-size: 1.6rem; }
-    .tabs-nav { width: 100%; overflow-x: auto; justify-content: flex-start; border-radius: 0; }
-    .tab { flex-shrink: 0; }
+.ia-slider-container input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 6px;
+    background: #444;
+    border-radius: 5px;
+    outline: none;
+    margin: 5px 0;
 }
 
-/* Utilitários Extras */
-.mt-25 { margin-top: 25px !important; }
-.mb-10 { margin-bottom: 10px !important; }
-.mb-20 { margin-bottom: 20px !important; }
-.mb-30 { margin-bottom: 30px !important; }
-
-.card-title-divider {
-    font-size: 1.1rem;
-    color: var(--text-primary);
-    margin-top: 30px;
-    margin-bottom: 15px;
-    border-bottom: 1px dashed var(--border-color);
-    padding-bottom: 12px;
-    font-weight: 700;
+.ia-slider-container input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    cursor: pointer;
+    border: 2px solid white;
 }
 
-.manual-odds-warning {
-    color: #fbbf24;
-    font-size: 0.9rem;
-    font-weight: 500;
-    margin-bottom: 10px;
-}
-
-.no-data {
+.ia-slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
     color: var(--text-secondary);
-    font-style: italic;
-    font-size: 0.9rem;
-    text-align: center;
-    padding: 10px;
 }
+
+/* Winner Card */
+.winner-card {
+    background: linear-gradient(135deg, var(--accent-primary), #E64A19);
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    color: white;
+    margin-top: 1.5rem;
+    box-shadow: 0 4px 15px rgba(255, 77, 0, 0.4);
+}
+.winner-card h3 { color: white; margin: 0; font-size: 1.5em; border: none; padding:0; }
+
