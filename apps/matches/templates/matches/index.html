@@ -1,7 +1,7 @@
 {% extends "matches/base.html" %}
 {% load static %}
 
-{% block title %}Jogos do Dia — StatsGreen{% endblock %}
+{% block title %}⚽ StatsGreen - Análises Preditivas de Futebol{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/index.css' %}">
@@ -55,9 +55,10 @@
     {% endfor %}
 
   {% else %}
-    <div style="text-align: center; padding: 50px; color: #666; background: var(--card-bg); border-radius: 10px;">
-        <h3>Nenhum jogo encontrado para esta data 😴</h3>
-        <p>Certifique-se de que você inseriu os jogos com a data correta no <b>Banco de Dados (Supabase)</b>.</p>
+    <div class="empty-state">
+        <span class="empty-state-icon">📅</span>
+        <h3>Nenhum jogo encontrado para esta data</h3>
+        <p>Aguarde as atualizações automáticas ou tente selecionar outra data no calendário acima.</p>
     </div>
   {% endif %}
 

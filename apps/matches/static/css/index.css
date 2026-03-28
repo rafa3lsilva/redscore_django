@@ -91,3 +91,34 @@
   .odds { grid-column: 1 / -1; justify-content: flex-start; margin-top: 5px; }
   .analyze-btn { grid-column: 2; grid-row: 2; justify-self: end; width: auto; padding: 6px 15px; }
 }
+
+/* Estado Vazio */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: var(--card-bg);
+  border: 1px border-color solid; /* fall back */
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  margin-top: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.empty-state h3 {
+  color: #fff;
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.empty-state p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
