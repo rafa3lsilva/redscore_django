@@ -99,6 +99,7 @@ def carregar_jogos_do_dia(data_selecionada_str=None):
                        link_confronto 
                 FROM jogos_do_dia 
                 WHERE data = %s
+                ORDER BY liga, hora, home
             """
             cursor.execute(query, [data_selecionada_str])
             columns = [col[0].lower() for col in cursor.description]
