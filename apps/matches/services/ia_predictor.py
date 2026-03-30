@@ -117,6 +117,12 @@ def calcular_probabilidades_ia(
         features['odd_d'] = odd_d
         features['odd_a'] = odd_a
 
+        # --- Adicionar Probabilidades Justas (Essenciais para bater o baseline) ---
+        p_h_j, p_d_j, p_a_j = remover_juice_odds(odd_h, odd_d, odd_a)
+        features['prob_justa_h'] = p_h_j
+        features['prob_justa_d'] = p_d_j
+        features['prob_justa_a'] = p_a_j
+
         # --- DataFrame alinhado ---
         X = pd.DataFrame([features], columns=feature_names)
         probs = model.predict_proba(X)[0]
