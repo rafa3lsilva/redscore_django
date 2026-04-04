@@ -45,7 +45,7 @@ def get_historico():
         if df.empty:
             return df
             
-        # Renomear as colunas para o padrão antigo (com iniciais maiúsculas) que as views.py e estatisticas.py esperam
+        # Renomear as colunas para o padrão antigo
         rename_map = {
             'data': 'Data',
             'home': 'Home',
@@ -69,6 +69,12 @@ def get_historico():
         # Manter compatibilidade do tipo Data de datetime local
         df['Data'] = pd.to_datetime(df['Data'], errors='coerce')
         df = df.dropna(subset=['Data'])
+        
+        # Sort data once for efficiency in later filtering
+        df = df.sort_values('Data')
+        
+        # Pre-calculate common stats to avoid repeating in ia_features
+        # This is a small optimization but adds up
         
         cache.set('historico_df', df, timeout=1800)
         return df

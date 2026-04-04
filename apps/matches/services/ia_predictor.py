@@ -2,7 +2,8 @@ import numpy as np
 import joblib
 import pandas as pd
 from .ia_features import calcular_stats_time, calcular_media_liga
-
+from django.core.cache import cache
+import hashlib
 
 import os
 
@@ -48,6 +49,13 @@ def calcular_probabilidades_ia(
     df_historico,
     peso_recente: int = 50
 ):
+    # Caching predictions
+    cache_key_str = f"ia_pred_{home}_{away}_{liga}_{odd_h}_{odd_d}_{odd_a}_{peso_recente}_{df_historico.shape}"
+    cache_key = f"ia_pred_{hashlib.md5(cache_key_str.encode()).hexdigest()}"
+    cached_res = cache.get(cache_key)
+    if cached_res:
+        return cached_res
+
     if IA_MODEL is None:
         return {'erro': f'Modelo de IA não disponível: {MODEL_ERROR}'}
     
@@ -55,7 +63,7 @@ def calcular_probabilidades_ia(
     feature_names = FEATURE_NAMES
 
     # --- Data do jogo ---
-    df_historico['Data'] = pd.to_datetime(df_historico['Data'], errors='coerce')
+    # df_historico['Data'] is already datetime from data_service
     data_jogo = df_historico['Data'].max() + pd.Timedelta(days=1)
 
     # --- Stats ---
@@ -70,37 +78,31 @@ def calcular_probabilidades_ia(
 
     else:
         features = {}
-
-        mapa = {
-            'gols_pro': 'gols',
-            'gols_contra': 'gols',
-            'chutes_pro': 'chutes',
-            'chutes_gol_pro': 'chutes_gol',
-            'chutes_contra': 'chutes',
-            'chutes_gol_contra': 'chutes_gol',
-            'ataques_pro': 'ataques',
-            'ataques_contra': 'ataques',
-            'escanteios_pro': 'escanteios',
-            'escanteios_contra': 'escanteios'
-        }
-
-        # Blending Factor
+        
+        # Blending Factor (Site feature: allows user to weight recent form)
+        # 1.0 means 100% recent form (matches training logic)
         factor = peso_recente / 50.0
 
-        for col, col_liga in mapa.items():
-            base = stats_liga[col_liga] + 0.001
-            raw_h = stats_home[col]
-            raw_a = stats_away[col]
-            avg_l = stats_liga[col_liga]
-            
-            adj_h = avg_l + (raw_h - avg_l) * factor
-            adj_a = avg_l + (raw_a - avg_l) * factor
+        # 1. Gols Pro (Relative to League)
+        base_gols = stats_liga['gols'] + 0.001
+        avg_gols = stats_liga['gols']
+        
+        adj_h_gols = avg_gols + (stats_home['gols_pro'] - avg_gols) * factor
+        adj_a_gols = avg_gols + (stats_away['gols_pro'] - avg_gols) * factor
+        
+        features['home_gols_pro_rel'] = adj_h_gols / base_gols
+        features['away_gols_pro_rel'] = adj_a_gols / base_gols
+        features['diff_gols_pro'] = adj_h_gols - adj_a_gols
 
-            features[f'home_{col}'] = adj_h / base
-            features[f'away_{col}'] = adj_a / base
-            features[f'diff_{col}'] = adj_h - adj_a
+        # 2. Resultado Num (Forma) - Pure differentials
+        adj_h_res = stats_home['resultado_num'] * factor
+        adj_a_res = stats_away['resultado_num'] * factor
+        
+        features['home_resultado_num'] = adj_h_res
+        features['away_resultado_num'] = adj_a_res
+        features['diff_resultado_num'] = adj_h_res - adj_a_res
 
-        # Stats whose baseline is roughly 0
+        # 3. Eficiência e Perigo (Pure differentials)
         features['home_eficiencia_ofensiva'] = stats_home['eficiencia_ofensiva'] * factor
         features['away_eficiencia_ofensiva'] = stats_away['eficiencia_ofensiva'] * factor
         features['diff_eficiencia_ofensiva'] = (
@@ -113,24 +115,29 @@ def calcular_probabilidades_ia(
             features['home_perigo_defensivo'] - features['away_perigo_defensivo']
         )
 
-        features['odd_h'] = odd_h
-        features['odd_d'] = odd_d
-        features['odd_a'] = odd_a
+        # 4. xG Estimado (Pure differentials)
+        features['home_xG_estimado'] = stats_home['xG_estimado'] * factor
+        features['away_xG_estimado'] = stats_away['xG_estimado'] * factor
+        features['diff_xG_estimado'] = features['home_xG_estimado'] - features['away_xG_estimado']
 
-        # --- Adicionar Probabilidades Justas (Essenciais para bater o baseline) ---
+        # 5. Odds and Probabilidades Justas
+        features['Odd_H'] = odd_h
+        features['Odd_D'] = odd_d
+        features['Odd_A'] = odd_a
+
         p_h_j, p_d_j, p_a_j = remover_juice_odds(odd_h, odd_d, odd_a)
         features['prob_justa_h'] = p_h_j
         features['prob_justa_d'] = p_d_j
         features['prob_justa_a'] = p_a_j
 
-        # --- DataFrame alinhado ---
+        # --- DataFrame alinhado com a ordem exata do treinamento ---
         X = pd.DataFrame([features], columns=feature_names)
         probs = model.predict_proba(X)[0]
 
         prob_h, prob_d, prob_a = probs
         fallback = False
 
-    return {
+    res = {
         'prob_casa': round(float(prob_h * 100), 2),
         'prob_empate': round(float(prob_d * 100), 2),
         'prob_fora': round(float(prob_a * 100), 2),
@@ -139,3 +146,6 @@ def calcular_probabilidades_ia(
         'odd_justa_fora': round(float(1 / prob_a), 2) if prob_a > 0 else 0.0,
         'fallback': fallback
     }
+    
+    cache.set(cache_key, res, timeout=1800)
+    return res
