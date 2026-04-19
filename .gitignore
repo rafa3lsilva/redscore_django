@@ -22,6 +22,9 @@ db.sqlite3-journal
 staticfiles/
 static_root/
 
+# Arquivos de protótipo
+prototipo_navegacao.html
+
 # Logs e IDEs
 *.log
 .vscode/

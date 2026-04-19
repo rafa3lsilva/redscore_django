@@ -86,8 +86,29 @@ def analise_jogo(request):
 
     print(f"🔍 Analisando: {home} vs {away} | Odds: {odd_h}/{odd_d}/{odd_a}")
 
-    # 3. Carrega Histórico
+    # 3. Carrega Histórico e Jogos do Dia da mesma liga
     df_historico = get_historico()
+    df_jogos = carregar_jogos_do_dia(data_jogo)
+    jogos_mesma_liga = []
+
+    if not df_jogos.empty:
+        for _, row in df_jogos.iterrows():
+            row_liga = row.get('liga', 'Outros')
+            if row_liga == liga:
+                hora_raw = row.get('hora') or row.get('time') or '--:--'
+                hora_str_upper = str(hora_raw).strip().upper()
+                if 'POSTP' in hora_str_upper or hora_str_upper == 'NAN' or hora_str_upper == '--:--':
+                    continue
+                hora_str = str(hora_raw).replace('.0', '')[0:5]
+                
+                jogos_mesma_liga.append({
+                    'home': row.get('home'),
+                    'away': row.get('away'),
+                    'hora': hora_str,
+                    'odd_h': row.get('odd_h', 0),
+                    'odd_d': row.get('odd_d', 0),
+                    'odd_a': row.get('odd_a', 0),
+                })
     
     # 4. Monta o Contexto (Variáveis para o HTML)
     context: Dict[str, Any] = {
@@ -97,6 +118,7 @@ def analise_jogo(request):
         'hora_jogo': hora,   # <--- Passando a hora
         'data_jogo': data_jogo,
         'peso_atual': peso_atual,
+        'jogos_mesma_liga': jogos_mesma_liga,
         'analise': {}
     }
 

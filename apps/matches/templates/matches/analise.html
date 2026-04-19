@@ -27,9 +27,100 @@
             {% endif %}
         </span>
 
-        <div class="league-info">
+        <!-- Liga e Dropdown Embutido -->
+        <div class="league-info" style="align-items: center; margin-bottom: 1.5rem;">
             <span class="league-name">{{ liga }}</span>
-            <span class="match-datetime">{{ data_jogo }} • {{ hora_jogo }}</span>
+            <span class="match-datetime">{{ data_jogo }}</span>
+            
+            {% if jogos_mesma_liga and jogos_mesma_liga|length > 1 %}
+            <!-- Dropdown Discreto Customizado (Dark Mode Real) -->
+            <div style="position: relative; margin-top: 10px;">
+                <style>
+                    .custom-select-trigger {
+                        background: rgba(255,255,255,0.03);
+                        border: 1px solid var(--border-color);
+                        color: var(--text-primary);
+                        padding: 8px 35px 8px 15px;
+                        border-radius: 20px;
+                        font-size: 0.85rem;
+                        cursor: pointer;
+                        display: inline-block;
+                        position: relative;
+                        transition: all 0.2s;
+                        font-family: inherit;
+                    }
+                    .custom-select-trigger:hover {
+                        background: rgba(255,255,255,0.08);
+                    }
+                    .custom-dropdown-menu {
+                        display: none;
+                        position: absolute;
+                        top: 100%;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        margin-top: 8px;
+                        background: #1b1b1b;
+                        border: 1px solid var(--border-color);
+                        border-radius: 12px;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+                        z-index: 100;
+                        width: max-content;
+                        min-width: 250px;
+                        max-height: 300px;
+                        overflow-y: auto;
+                    }
+                    .custom-dropdown-menu.show { display: block; animation: fadeIn 0.2s ease; }
+                    .dropdown-item {
+                        padding: 12px 20px;
+                        color: var(--text-secondary);
+                        font-size: 0.9rem;
+                        cursor: pointer;
+                        border-bottom: 1px solid rgba(255,255,255,0.05);
+                        text-align: left;
+                        transition: background 0.2s;
+                        display: block;
+                        text-decoration: none;
+                    }
+                    .dropdown-item:hover { background: rgba(255,255,255,0.05); color: white; }
+                    .dropdown-item.active { border-left: 3px solid var(--accent-primary); background: rgba(255, 77, 0, 0.05); color: white; font-weight: bold; }
+                    .dropdown-item:last-child { border-bottom: none; }
+                    
+                    /* Custom Scrollbar for dropdown */
+                    .custom-dropdown-menu::-webkit-scrollbar { width: 6px; }
+                    .custom-dropdown-menu::-webkit-scrollbar-thumb { background: var(--accent-primary); border-radius: 6px; }
+                    .custom-dropdown-menu::-webkit-scrollbar-track { background: transparent; }
+                </style>
+
+                <!-- Trigger do Dropdown -->
+                <div class="custom-select-trigger" onclick="document.getElementById('dropdown-menu-league').classList.toggle('show')">
+                    {{ hora_jogo }} • {{ home_team }} vs {{ away_team }}
+                    <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--accent-primary); font-size: 0.7rem;">▼</span>
+                </div>
+
+                <!-- O Menu que irá aparecer (Totalmente Dark) -->
+                <div id="dropdown-menu-league" class="custom-dropdown-menu">
+                    {% for j in jogos_mesma_liga %}
+                        <a href="{% url 'analise_jogo' %}?home={{ j.home }}&away={{ j.away }}&liga={{ liga|urlencode }}&hora={{ j.hora }}&data={{ data_jogo }}&odd_h={{ j.odd_h|stringformat:"s" }}&odd_d={{ j.odd_d|stringformat:"s" }}&odd_a={{ j.odd_a|stringformat:"s"|default_if_none:"" }}" 
+                           class="dropdown-item {% if j.home == home_team and j.away == away_team %}active{% endif %}">
+                            <span style="color:var(--accent-primary); margin-right:5px;">{{ j.hora }}</span> {{ j.home }} vs {{ j.away }}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <script>
+                // Fecha o dropdown se clicar fora
+                window.addEventListener('click', function(e) {
+                    if (!e.target.closest('.custom-select-trigger') && !e.target.closest('.custom-dropdown-menu')) {
+                        const menu = document.getElementById('dropdown-menu-league');
+                        if(menu) menu.classList.remove('show');
+                    }
+                });
+            </script>
+            {% else %}
+               <!-- Fallback se não tiver lista ou for só 1 jogo -->
+               <span class="match-datetime" style="margin-top: 5px;">{{ hora_jogo }} • {{ home_team }} vs {{ away_team }}</span>
+            {% endif %}
         </div>
 
         <div class="match-versus">
