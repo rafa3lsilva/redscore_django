@@ -69,7 +69,12 @@
                         max-height: 300px;
                         overflow-y: auto;
                     }
-                    .custom-dropdown-menu.show { display: block; animation: fadeIn 0.2s ease; }
+                    
+                    @keyframes dropdownFadeIn {
+                        from { opacity: 0; transform: translate(-50%, 5px); }
+                        to { opacity: 1; transform: translate(-50%, 0); }
+                    }
+                    .custom-dropdown-menu.show { display: block; animation: dropdownFadeIn 0.2s ease; }
                     .dropdown-item {
                         padding: 12px 20px;
                         color: var(--text-secondary);
