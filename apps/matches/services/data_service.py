@@ -33,7 +33,8 @@ def get_historico():
                        "A_Escanteios" as a_escanteios,
                        "H_Chute" as h_chute, "A_Chute" as a_chute,
                        "H_Chute_Gol" as h_chute_gol, "A_Chute_Gol" as a_chute_gol,
-                       "H_Ataques" as h_ataques, "A_Ataques" as a_ataques
+                       "H_Ataques" as h_ataques, "A_Ataques" as a_ataques,
+                       "Odd_H" as odd_h, "Odd_D" as odd_d, "Odd_A" as odd_a
                 FROM dados_redscore
             """
             cursor.execute(query)
@@ -62,7 +63,10 @@ def get_historico():
             'h_chute_gol': 'H_Chute_Gol',
             'a_chute_gol': 'A_Chute_Gol',
             'h_ataques': 'H_Ataques',
-            'a_ataques': 'A_Ataques'
+            'a_ataques': 'A_Ataques',
+            'odd_h': 'Odd_H',
+            'odd_d': 'Odd_D',
+            'odd_a': 'Odd_A'
         }
         df = df.rename(columns=rename_map)
         

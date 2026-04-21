@@ -357,3 +357,57 @@ def analisar_placares_comuns(home, away, df, num_jogos=5, cenario='casa_fora'):
     
     cache.set(cache_key, result, timeout=600)
     return result
+
+# --- Backtest de Desempenho por Odd ---
+def analisar_desempenho_odd(team, odd_alvo, df, tolerancia=0.10):
+    cache_key = _get_cache_key('analisar_desempenho_odd', team, odd_alvo, tolerancia)
+    cached_result = cache.get(cache_key)
+    if cached_result:
+        return cached_result
+
+    if df.empty or not odd_alvo:
+        return {'esperada': 0, 'real': 0, 'amostra': 0}
+
+    try:
+        odd_alvo = float(odd_alvo)
+        if odd_alvo <= 1:
+            return {'esperada': 0, 'real': 0, 'amostra': 0}
+            
+        esperada = (1 / odd_alvo) * 100
+        min_odd = odd_alvo * (1 - tolerancia)
+        max_odd = odd_alvo * (1 + tolerancia)
+        
+        # Jogos como mandante
+        df_home = df[df['Home'] == team]
+        if 'Odd_H' in df_home.columns:
+            df_home_faixa = df_home[(df_home['Odd_H'] >= min_odd) & (df_home['Odd_H'] <= max_odd)]
+            vitorias_home = len(df_home_faixa[df_home_faixa['H_Gols_FT'] > df_home_faixa['A_Gols_FT']])
+            total_home = len(df_home_faixa)
+        else:
+            vitorias_home, total_home = 0, 0
+            
+        # Jogos como visitante
+        df_away = df[df['Away'] == team]
+        if 'Odd_A' in df_away.columns:
+            df_away_faixa = df_away[(df_away['Odd_A'] >= min_odd) & (df_away['Odd_A'] <= max_odd)]
+            vitorias_away = len(df_away_faixa[df_away_faixa['A_Gols_FT'] > df_away_faixa['H_Gols_FT']])
+            total_away = len(df_away_faixa)
+        else:
+            vitorias_away, total_away = 0, 0
+            
+        total_jogos = total_home + total_away
+        vitorias = vitorias_home + vitorias_away
+        
+        real = (vitorias / total_jogos * 100) if total_jogos > 0 else 0
+        
+        result = {
+            'esperada': round(esperada, 1),
+            'real': round(real, 1),
+            'amostra': total_jogos
+        }
+        cache.set(cache_key, result, timeout=1800)
+        return result
+        
+    except Exception as e:
+        print(f"Erro em analisar_desempenho_odd: {e}")
+        return {'esperada': 0, 'real': 0, 'amostra': 0}

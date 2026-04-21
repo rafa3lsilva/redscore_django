@@ -232,4 +232,10 @@ def analise_jogo(request):
         context['analise']['ia'] = {'erro': 'Odds ausentes'}
         context['mostrar_form_odds'] = True
 
+    # Backtest de Odds Históricas (Real Win Rate vs Expected)
+    if odd_h:
+        context['backtest_h'] = estatisticas.analisar_desempenho_odd(home, odd_h, df_historico)
+    if odd_a:
+        context['backtest_a'] = estatisticas.analisar_desempenho_odd(away, odd_a, df_historico)
+
     return render(request, 'matches/analise.html', context)

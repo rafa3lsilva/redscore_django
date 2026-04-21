@@ -257,15 +257,20 @@
                 <p class="info-text" style="color: white; margin-bottom: 5px;">A Inteligência Artificial detectou odds desajustadas (mínimo de 7% de margem no preço justo):</p>
                 <ul>
                     {% if valor_h.tem %}
-                    <li>Aposta em <strong>Vitória {{ home_team }}</strong> possui Rentabilidade Esperada de <strong><span style="color: var(--accent-green);">{{ valor_h.margem }}%</span></strong>. O mercado paga <strong>{{ mercado_odd_h|floatformat:2 }}</strong>, porém nós calculamos a Odd Justa em <strong>{{ analise.ia.odd_justa_casa|floatformat:2 }}</strong>.</li>
+                    <li>Aposta em <strong>Vitória {{ home_team }}</strong> possui Rentabilidade Esperada de <strong><span style="color: var(--accent-green);">{{ valor_h.margem }}%</span></strong>. O mercado oferece <strong>{{ mercado_odd_h|floatformat:2 }}</strong>, enquanto a Odd Justa projetada pela IA é de <strong>{{ analise.ia.odd_justa_casa|floatformat:2 }}</strong>.</li>
                     {% endif %}
                     {% if valor_d.tem %}
-                    <li>Aposta em <strong>Empate</strong> possui Rentabilidade Esperada de <strong><span style="color: var(--accent-green);">{{ valor_d.margem }}%</span></strong>. O mercado paga <strong>{{ mercado_odd_d|floatformat:2 }}</strong>, porém nós calculamos a Odd Justa em <strong>{{ analise.ia.odd_justa_empate|floatformat:2 }}</strong>.</li>
+                    <li>Aposta em <strong>Empate</strong> possui Rentabilidade Esperada de <strong><span style="color: var(--accent-green);">{{ valor_d.margem }}%</span></strong>. O mercado oferece <strong>{{ mercado_odd_d|floatformat:2 }}</strong>, enquanto a Odd Justa projetada pela IA é de <strong>{{ analise.ia.odd_justa_empate|floatformat:2 }}</strong>.</li>
                     {% endif %}
                     {% if valor_a.tem %}
-                    <li>Aposta em <strong>Vitória {{ away_team }}</strong> possui Rentabilidade Esperada de <strong><span style="color: var(--accent-green);">{{ valor_a.margem }}%</span></strong>. O mercado paga <strong>{{ mercado_odd_a|floatformat:2 }}</strong>, porém nós calculamos a Odd Justa em <strong>{{ analise.ia.odd_justa_fora|floatformat:2 }}</strong>.</li>
+                    <li>Aposta em <strong>Vitória {{ away_team }}</strong> possui Rentabilidade Esperada de <strong><span style="color: var(--accent-green);">{{ valor_a.margem }}%</span></strong>. O mercado oferece <strong>{{ mercado_odd_a|floatformat:2 }}</strong>, enquanto a Odd Justa projetada pela IA é de <strong>{{ analise.ia.odd_justa_fora|floatformat:2 }}</strong>.</li>
                     {% endif %}
                 </ul>
+                <div style="margin-top: 15px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05);">
+                    <p style="font-size: 0.85em; color: var(--text-secondary); margin: 0; line-height: 1.5; font-style: italic;">
+                        ⚠️ <strong>Atenção:</strong> Encontrar "Valor" (+EV) indica que o retorno financeiro pago pela casa compensa o risco matemático no longo prazo. Isso <strong>não significa</strong> que esta é a opção com maior probabilidade de acontecer no jogo. O favorito continua sendo o favorito indicado nos Insights. Respeite sempre sua gestão de banca.
+                    </p>
+                </div>
             </div>
             {% endif %}
         {% endif %}
@@ -319,6 +324,16 @@
                 Já o {{ away_team }} tem uma média esperada de {{ analise.ft.lambda_away }} gols. 
                 A probabilidade de Over 2.5 é de {{ analise.ft.prob_over_25|floatformat:1 }}% e Ambas Marcam de {{ analise.ft.prob_btts|floatformat:1 }}%.
             </p>
+            {% if backtest_h.amostra > 0 or backtest_a.amostra > 0 %}
+            <p class="info-text" style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.05); border-left: 3px solid var(--accent-blue); border-radius: 4px; line-height: 1.6;">
+                {% if backtest_h.amostra > 0 %}
+                Quando as odds são <strong>{{ mercado_odd_h|floatformat:2 }}</strong>, a chance esperada de ganhar é <strong>{{ backtest_h.esperada }}%</strong>, mas o <strong>{{ home_team }}</strong> realmente ganha <strong>{{ backtest_h.real }}%</strong> das vezes com essas odds. (Amostra: {{ backtest_h.amostra }} jogos)<br>
+                {% endif %}
+                {% if backtest_a.amostra > 0 %}
+                <span style="{% if backtest_h.amostra > 0 %}display:block; margin-top:10px;{% endif %}">Quando as odds são <strong>{{ mercado_odd_a|floatformat:2 }}</strong>, a chance esperada de ganhar é <strong>{{ backtest_a.esperada }}%</strong>, mas o <strong>{{ away_team }}</strong> realmente ganha <strong>{{ backtest_a.real }}%</strong> das vezes com essas odds. (Amostra: {{ backtest_a.amostra }} jogos)</span>
+                {% endif %}
+            </p>
+            {% endif %}
         </div>
     </div>
 
