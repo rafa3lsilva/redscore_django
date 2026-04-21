@@ -10,6 +10,18 @@
     .tab-content { display: none; animation: fadeIn 0.4s ease; }
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    
+    /* Novos estilos para Odds Comparison */
+    .odds-comparison { margin-top: 15px; width: 100%; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 10px; display: flex; flex-direction: column; gap: 5px; }
+    .odd-item { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-secondary); }
+    .odd-val { font-weight: bold; color: white; }
+    .value-badge { margin-top: 12px; font-size: 0.75rem; font-weight: bold; padding: 4px 8px; border-radius: 6px; display: inline-block; width: 100%; text-align: center;}
+    .value-yes { background: rgba(76, 175, 80, 0.15); color: var(--accent-green); border: 1px solid rgba(76, 175, 80, 0.3); }
+    .value-no { background: rgba(255, 255, 255, 0.05); color: #888; border: 1px solid rgba(255, 255, 255, 0.1); }
+    .value-explanation { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 15px 20px; border-radius: 8px; margin-top: 20px; }
+    .value-explanation ul { margin-top: 10px; padding-left: 20px; color: var(--text-secondary); font-size: 0.9em; line-height: 1.6; }
+    .value-explanation li { margin-bottom: 8px; }
+    .value-explanation strong { color: white; }
 </style>
 {% endblock %}
 
@@ -192,17 +204,44 @@
     <div class="tab-content active">
         <div class="prediction-summary">
             {% if analise.ia and not analise.ia.erro %}
-                <div class="prob-card home-win">
+                <div class="prob-card home-win {% if valor_h.tem %}has-value{% endif %}">
                     <span class="prob-label">Vitória {{ home_team }}</span>
                     <div class="prob-value">{{ analise.ia.prob_casa|floatformat:2 }}<span>%</span></div>
+                    <div class="odds-comparison">
+                        <div class="odd-item"><span class="odd-label">Justa</span><span class="odd-val">{{ analise.ia.odd_justa_casa|floatformat:2 }}</span></div>
+                        <div class="odd-item"><span class="odd-label">Mercado</span><span class="odd-val">{{ mercado_odd_h|floatformat:2 }}</span></div>
+                    </div>
+                    {% if valor_h.tem %}
+                        <div class="value-badge value-yes">🔥 +EV ({{ valor_h.margem }}%)</div>
+                    {% else %}
+                        <div class="value-badge value-no">🚫 Sem Valor</div>
+                    {% endif %}
                 </div>
-                <div class="prob-card draw">
+                <div class="prob-card draw {% if valor_d.tem %}has-value{% endif %}">
                     <span class="prob-label">Empate</span>
                     <div class="prob-value">{{ analise.ia.prob_empate|floatformat:2 }}<span>%</span></div>
+                    <div class="odds-comparison">
+                        <div class="odd-item"><span class="odd-label">Justa</span><span class="odd-val">{{ analise.ia.odd_justa_empate|floatformat:2 }}</span></div>
+                        <div class="odd-item"><span class="odd-label">Mercado</span><span class="odd-val">{{ mercado_odd_d|floatformat:2 }}</span></div>
+                    </div>
+                    {% if valor_d.tem %}
+                        <div class="value-badge value-yes">🔥 +EV ({{ valor_d.margem }}%)</div>
+                    {% else %}
+                        <div class="value-badge value-no">🚫 Sem Valor</div>
+                    {% endif %}
                 </div>
-                <div class="prob-card away-win">
+                <div class="prob-card away-win {% if valor_a.tem %}has-value{% endif %}">
                     <span class="prob-label">Vitória {{ away_team }}</span>
                     <div class="prob-value">{{ analise.ia.prob_fora|floatformat:2 }}<span>%</span></div>
+                    <div class="odds-comparison">
+                        <div class="odd-item"><span class="odd-label">Justa</span><span class="odd-val">{{ analise.ia.odd_justa_fora|floatformat:2 }}</span></div>
+                        <div class="odd-item"><span class="odd-label">Mercado</span><span class="odd-val">{{ mercado_odd_a|floatformat:2 }}</span></div>
+                    </div>
+                    {% if valor_a.tem %}
+                        <div class="value-badge value-yes">🔥 +EV ({{ valor_a.margem }}%)</div>
+                    {% else %}
+                        <div class="value-badge value-no">🚫 Sem Valor</div>
+                    {% endif %}
                 </div>
             {% else %}
                 <div class="prob-card home-win"><span class="prob-label">Força Casa</span><div class="prob-value">{{ analise.ft.lambda_home }} <span>Gols</span></div></div>
@@ -210,6 +249,26 @@
                 <div class="prob-card away-win"><span class="prob-label">Força Fora</span><div class="prob-value">{{ analise.ft.lambda_away }} <span>Gols</span></div></div>
             {% endif %}
         </div>
+
+        {% if analise.ia and not analise.ia.erro %}
+            {% if valor_h.tem or valor_d.tem or valor_a.tem %}
+            <div class="value-explanation">
+                <h3 class="card-title">💎 Oportunidades de Valor Encontradas (+EV)</h3>
+                <p class="info-text" style="color: white; margin-bottom: 5px;">A Inteligência Artificial detectou odds desajustadas (mínimo de 7% de margem no preço justo):</p>
+                <ul>
+                    {% if valor_h.tem %}
+                    <li>Aposta em <strong>Vitória {{ home_team }}</strong> possui Rentabilidade Esperada de <strong><span style="color: var(--accent-green);">{{ valor_h.margem }}%</span></strong>. O mercado paga <strong>{{ mercado_odd_h|floatformat:2 }}</strong>, porém nós calculamos a Odd Justa em <strong>{{ analise.ia.odd_justa_casa|floatformat:2 }}</strong>.</li>
+                    {% endif %}
+                    {% if valor_d.tem %}
+                    <li>Aposta em <strong>Empate</strong> possui Rentabilidade Esperada de <strong><span style="color: var(--accent-green);">{{ valor_d.margem }}%</span></strong>. O mercado paga <strong>{{ mercado_odd_d|floatformat:2 }}</strong>, porém nós calculamos a Odd Justa em <strong>{{ analise.ia.odd_justa_empate|floatformat:2 }}</strong>.</li>
+                    {% endif %}
+                    {% if valor_a.tem %}
+                    <li>Aposta em <strong>Vitória {{ away_team }}</strong> possui Rentabilidade Esperada de <strong><span style="color: var(--accent-green);">{{ valor_a.margem }}%</span></strong>. O mercado paga <strong>{{ mercado_odd_a|floatformat:2 }}</strong>, porém nós calculamos a Odd Justa em <strong>{{ analise.ia.odd_justa_fora|floatformat:2 }}</strong>.</li>
+                    {% endif %}
+                </ul>
+            </div>
+            {% endif %}
+        {% endif %}
 
         {% if mostrar_form_odds %}
         <div class="manual-odds-box">

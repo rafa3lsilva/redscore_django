@@ -119,6 +119,9 @@ def analise_jogo(request):
         'data_jogo': data_jogo,
         'peso_atual': peso_atual,
         'jogos_mesma_liga': jogos_mesma_liga,
+        'mercado_odd_h': odd_h,
+        'mercado_odd_d': odd_d,
+        'mercado_odd_a': odd_a,
         'analise': {}
     }
 
@@ -206,6 +209,18 @@ def analise_jogo(request):
                 home, away, liga, odd_h, odd_d, odd_a, df_historico, peso_atual
             )
             context['analise']['ia'] = preds
+
+            # Cálculo de Valor: mínimo 7% de espaço
+            def calcular_valor(mercado, justa):
+                if justa > 0 and mercado:
+                    margem_pct = ((mercado / justa) - 1) * 100
+                    return {'tem': margem_pct >= 7.0, 'margem': round(margem_pct, 1)}
+                return {'tem': False, 'margem': 0.0}
+
+            context['valor_h'] = calcular_valor(odd_h, preds.get('odd_justa_casa', 0))
+            context['valor_d'] = calcular_valor(odd_d, preds.get('odd_justa_empate', 0))
+            context['valor_a'] = calcular_valor(odd_a, preds.get('odd_justa_fora', 0))
+            
             print(f"✅ Resultado IA: {preds}")
         except Exception as e:
             msg = f"Erro ao processar IA: {e}"
