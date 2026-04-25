@@ -25,6 +25,7 @@ static_root/
 # Arquivos de protótipo
 prototipo_navegacao.html
 prototipo_valor.html
+prototipo_atualizacao.html
 # Logs e IDEs
 *.log
 .vscode/

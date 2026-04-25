@@ -1,30 +1,149 @@
 .container { max-width: 980px; margin: 0 auto; padding: 20px; }
 
-/* Filtro */
+/* ===========================
+   TOOLBAR (atualizada)
+   =========================== */
 .toolbar {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 15px; margin-bottom: 25px;
-  display: flex; gap: 15px; align-items: center;
+  display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 .toolbar input[type="date"] {
   background: #111; color: #fff; border: 1px solid #444; 
   padding: 8px; border-radius: 5px;
 }
-.toolbar button {
+.toolbar button[type="submit"] {
   background: var(--accent-primary); color: white; border: none;
   padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;
 }
 
-/* Liga Card */
+/* ===========================
+   CAMPO DE BUSCA (Feature 2)
+   =========================== */
+.search-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+.search-wrapper::before {
+  content: "🔍";
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+#search-filter {
+  width: 100%;
+  box-sizing: border-box;
+  background: #111;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 8px 8px 8px 34px;
+  border-radius: 5px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+#search-filter:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(255, 77, 0, 0.15);
+}
+#search-filter::placeholder {
+  color: #666;
+}
+
+/* ===========================
+   TOGGLE LIGA/HORÁRIO (Feature 1)
+   =========================== */
+.toggle-group {
+  display: flex;
+  gap: 8px;
+}
+.toggle-btn {
+  background: #222;
+  color: #888;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.toggle-btn.active {
+  background: var(--accent-primary);
+  color: #fff;
+  border-color: var(--accent-primary);
+}
+.toggle-btn:hover:not(.active) {
+  background: #333;
+  color: #ccc;
+}
+
+/* ===========================
+   SWITCH JOGOS FUTUROS (Feature 3)
+   =========================== */
+.future-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.switch {
+  position: relative;
+  width: 40px;
+  height: 22px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: #444;
+  border-radius: 22px;
+  transition: 0.3s;
+}
+.slider::before {
+  content: "";
+  position: absolute;
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+.switch input:checked + .slider {
+  background: var(--accent-green);
+}
+.switch input:checked + .slider::before {
+  transform: translateX(18px);
+}
+
+/* ===========================
+   LIGA CARD
+   =========================== */
 .league-card {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: 10px; margin-bottom: 20px;
   overflow: hidden;
+  transition: opacity 0.3s;
 }
+.league-card.hidden { display: none; }
+.league-card.all-past { opacity: 0.3; }
 
 /* Cabeçalho da Liga */
 .league-header {
@@ -38,7 +157,46 @@
   font-size: 1.1rem; font-weight: 700; text-transform: uppercase;
 }
 
-/* Linha do Jogo */
+/* ===========================
+   HORA CARD (Feature 1 - visão por horário)
+   =========================== */
+.hour-header {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hour-badge {
+  background: var(--accent-primary);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-family: monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.hour-count {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+.match-liga-tag {
+  display: inline-block;
+  background: #2a2a2a;
+  color: var(--accent-primary);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* ===========================
+   LINHA DO JOGO
+   =========================== */
 .match-row {
   display: grid;
   /* Colunas: Hora | Times | Odds | Botão */
@@ -46,11 +204,13 @@
   align-items: center;
   padding: 15px 18px;
   border-bottom: 1px solid #2a2a2a;
-  transition: background 0.2s;
+  transition: background 0.2s, opacity 0.3s;
   gap: 15px;
 }
 .match-row:hover { background-color: rgba(255,255,255,0.03); }
 .match-row:last-child { border-bottom: none; }
+.match-row.hidden { display: none; }
+.match-row.past-game { display: none; }
 
 /* Hora */
 .match-time {
@@ -85,19 +245,27 @@
 }
 .analyze-btn:hover { background: var(--accent-green); color: #fff; }
 
-/* Mobile */
+/* ===========================
+   MOBILE
+   =========================== */
 @media(max-width: 600px) {
+  .toolbar { flex-direction: column; }
+  .search-wrapper { min-width: 100%; }
+  .toggle-group { align-self: stretch; }
+  .toggle-btn { flex: 1; text-align: center; }
+  .future-toggle { align-self: flex-start; }
   .match-row { grid-template-columns: 60px 1fr; grid-template-rows: auto auto; gap: 10px; }
   .odds { grid-column: 1 / -1; justify-content: flex-start; margin-top: 5px; }
   .analyze-btn { grid-column: 2; grid-row: 2; justify-self: end; width: auto; padding: 6px 15px; }
 }
 
-/* Estado Vazio */
+/* ===========================
+   ESTADO VAZIO
+   =========================== */
 .empty-state {
   text-align: center;
   padding: 60px 20px;
   background: var(--card-bg);
-  border: 1px border-color solid; /* fall back */
   border: 1px solid var(--border-color);
   border-radius: 12px;
   margin-top: 20px;

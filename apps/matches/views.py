@@ -13,6 +13,7 @@ def pagina_inicial(request):
     
     df_jogos = carregar_jogos_do_dia(data_filtro)
     jogos_por_liga = {}
+    jogos_por_hora = {}
 
     if not df_jogos.empty:
         # A pedido do usuário, removemos a ordenação global ('hora', 'liga') 
@@ -32,13 +33,7 @@ def pagina_inicial(request):
                 
             hora = str(hora_raw).replace('.0', '')[0:5]
             
-            # Como o Python 3.7+ mantém a ordem de inserção nos dicionários:
-            # A primeira vez que a liga aparecer (no jogo mais cedo), 
-            # ela cria a "Caixa" da liga na posição correta.
-            if liga not in jogos_por_liga: 
-                jogos_por_liga[liga] = []
-            
-            jogos_por_liga[liga].append({
+            jogo_dict = {
                 'home': row.get('home'),
                 'away': row.get('away'),
                 'liga': liga,
@@ -46,10 +41,24 @@ def pagina_inicial(request):
                 'Odd_H': row.get('odd_h', 0),
                 'Odd_D': row.get('odd_d', 0),
                 'Odd_A': row.get('odd_a', 0),
-            })
+            }
+
+            # Agrupamento por Liga (padrão)
+            if liga not in jogos_por_liga: 
+                jogos_por_liga[liga] = []
+            jogos_por_liga[liga].append(jogo_dict)
+
+            # Agrupamento por Horário (novo)
+            if hora not in jogos_por_hora:
+                jogos_por_hora[hora] = []
+            jogos_por_hora[hora].append(jogo_dict)
+
+    # Ordenar jogos_por_hora cronologicamente
+    jogos_por_hora = dict(sorted(jogos_por_hora.items()))
 
     return render(request, 'matches/index.html', {
         'jogos_por_liga': jogos_por_liga,
+        'jogos_por_hora': jogos_por_hora,
         'data_selecionada': data_filtro
     })
 

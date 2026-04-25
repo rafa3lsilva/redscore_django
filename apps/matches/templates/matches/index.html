@@ -10,49 +10,115 @@
 {% block content %}
 <div class="container">
 
-  <form class="toolbar" method="get">
+  <!-- === TOOLBAR ATUALIZADA === -->
+  <form class="toolbar" method="get" id="main-toolbar">
     <label for="date-filter">📅 Data:</label>
     <input id="date-filter" type="date" name="data" value="{{ data_selecionada }}">
     <button type="submit">Buscar Jogos</button>
+
+    <!-- Feature 2: Campo de Busca -->
+    <div class="search-wrapper">
+      <input type="search" id="search-filter" placeholder="Buscar time ou liga..." autocomplete="off">
+    </div>
+
+    <!-- Feature 1: Toggle Liga/Horário -->
+    <div class="toggle-group">
+      <button type="button" class="toggle-btn active" id="btn-liga" onclick="setView('liga')">Por Liga</button>
+      <button type="button" class="toggle-btn" id="btn-hora" onclick="setView('hora')">Por Horário</button>
+    </div>
+
+    <!-- Feature 3: Toggle Jogos Futuros -->
+    <div class="future-toggle">
+      <label class="switch">
+        <input type="checkbox" id="future-only" onchange="toggleFutureOnly()">
+        <span class="slider"></span>
+      </label>
+      <span>⏰ Só futuros</span>
+    </div>
   </form>
 
   {% if jogos_por_liga %}
-    {% for liga, jogos in jogos_por_liga.items %}
-      <div class="league-card">
-        
-        <div class="league-header">
-            <h3 class="league-title">{{ liga }}</h3>
-            <span>⚽</span>
-        </div>
 
-        {% for jogo in jogos %}
-          <div class="match-row">
-            
-            <div class="match-time">
-                {{ jogo.hora }}
-            </div>
-
-            <div class="match-teams">
-              <a href="{% url 'analise_jogo' %}?home={{ jogo.home }}&away={{ jogo.away }}&liga={{ jogo.liga }}&hora={{ jogo.hora }}&data={{ data_selecionada }}&odd_h={{ jogo.Odd_H }}&odd_d={{ jogo.Odd_D }}&odd_a={{ jogo.Odd_A }}">
-                  {{ jogo.home }} <span class="vs">vs</span> {{ jogo.away }}
-              </a>
-            </div>
-
-            <div class="odds">
-               <span class="odd" title="Casa">{{ jogo.Odd_H }}</span>
-               <span class="odd" title="Empate">{{ jogo.Odd_D }}</span>
-               <span class="odd" title="Fora">{{ jogo.Odd_A }}</span>
-            </div>
-
-            <a class="analyze-btn" 
-              href="{% url 'analise_jogo' %}?home={{ jogo.home }}&away={{ jogo.away }}&liga={{ jogo.liga }}&hora={{ jogo.hora }}&data={{ data_selecionada }}&odd_h={{ jogo.Odd_H }}&odd_d={{ jogo.Odd_D }}&odd_a={{ jogo.Odd_A }}">
-              Analisar
-            </a>
-
+    <!-- === VISÃO POR LIGA (padrão) === -->
+    <div id="view-liga">
+      {% for liga, jogos in jogos_por_liga.items %}
+        <div class="league-card" data-liga="{{ liga }}">
+          
+          <div class="league-header">
+              <h3 class="league-title">{{ liga }}</h3>
+              <span>⚽</span>
           </div>
-        {% endfor %}
-      </div>
-    {% endfor %}
+
+          {% for jogo in jogos %}
+            <div class="match-row" data-hora="{{ jogo.hora }}" data-teams="{{ jogo.home }} {{ jogo.away }}" data-liga="{{ jogo.liga }}">
+              
+              <div class="match-time">
+                  {{ jogo.hora }}
+              </div>
+
+              <div class="match-teams">
+                <a href="{% url 'analise_jogo' %}?home={{ jogo.home }}&away={{ jogo.away }}&liga={{ jogo.liga }}&hora={{ jogo.hora }}&data={{ data_selecionada }}&odd_h={{ jogo.Odd_H }}&odd_d={{ jogo.Odd_D }}&odd_a={{ jogo.Odd_A }}">
+                    {{ jogo.home }} <span class="vs">vs</span> {{ jogo.away }}
+                </a>
+              </div>
+
+              <div class="odds">
+                 <span class="odd" title="Casa">{{ jogo.Odd_H }}</span>
+                 <span class="odd" title="Empate">{{ jogo.Odd_D }}</span>
+                 <span class="odd" title="Fora">{{ jogo.Odd_A }}</span>
+              </div>
+
+              <a class="analyze-btn" 
+                href="{% url 'analise_jogo' %}?home={{ jogo.home }}&away={{ jogo.away }}&liga={{ jogo.liga }}&hora={{ jogo.hora }}&data={{ data_selecionada }}&odd_h={{ jogo.Odd_H }}&odd_d={{ jogo.Odd_D }}&odd_a={{ jogo.Odd_A }}">
+                Analisar
+              </a>
+
+            </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- === VISÃO POR HORÁRIO === -->
+    <div id="view-hora" style="display:none;">
+      {% for hora, jogos in jogos_por_hora.items %}
+        <div class="league-card" data-hora-group="{{ hora }}">
+          
+          <div class="hour-header">
+              <span class="hour-badge">{{ hora }}</span>
+              <span class="hour-count">{{ jogos|length }} jogo{{ jogos|length|pluralize:"s" }}</span>
+          </div>
+
+          {% for jogo in jogos %}
+            <div class="match-row" data-hora="{{ jogo.hora }}" data-teams="{{ jogo.home }} {{ jogo.away }}" data-liga="{{ jogo.liga }}">
+              
+              <div class="match-time">
+                  {{ jogo.hora }}
+              </div>
+
+              <div class="match-teams">
+                <span class="match-liga-tag">{{ jogo.liga }}</span>
+                <a href="{% url 'analise_jogo' %}?home={{ jogo.home }}&away={{ jogo.away }}&liga={{ jogo.liga }}&hora={{ jogo.hora }}&data={{ data_selecionada }}&odd_h={{ jogo.Odd_H }}&odd_d={{ jogo.Odd_D }}&odd_a={{ jogo.Odd_A }}">
+                    {{ jogo.home }} <span class="vs">vs</span> {{ jogo.away }}
+                </a>
+              </div>
+
+              <div class="odds">
+                 <span class="odd" title="Casa">{{ jogo.Odd_H }}</span>
+                 <span class="odd" title="Empate">{{ jogo.Odd_D }}</span>
+                 <span class="odd" title="Fora">{{ jogo.Odd_A }}</span>
+              </div>
+
+              <a class="analyze-btn" 
+                href="{% url 'analise_jogo' %}?home={{ jogo.home }}&away={{ jogo.away }}&liga={{ jogo.liga }}&hora={{ jogo.hora }}&data={{ data_selecionada }}&odd_h={{ jogo.Odd_H }}&odd_d={{ jogo.Odd_D }}&odd_a={{ jogo.Odd_A }}">
+                Analisar
+              </a>
+
+            </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
 
   {% else %}
     <div class="empty-state">
@@ -63,4 +129,74 @@
   {% endif %}
 
 </div>
+
+<script>
+// === Feature 1: Toggle Liga/Horário ===
+function setView(mode) {
+    document.getElementById('btn-liga').classList.toggle('active', mode === 'liga');
+    document.getElementById('btn-hora').classList.toggle('active', mode === 'hora');
+    document.getElementById('view-liga').style.display = mode === 'liga' ? 'block' : 'none';
+    document.getElementById('view-hora').style.display = mode === 'hora' ? 'block' : 'none';
+    localStorage.setItem('statsgreen_view_mode', mode);
+}
+
+// === Feature 2: Busca Client-Side ===
+document.getElementById('search-filter').addEventListener('input', function() {
+    const q = this.value.toLowerCase().trim();
+    const activeView = document.getElementById('view-liga').style.display !== 'none' ? 'view-liga' : 'view-hora';
+    const container = document.getElementById(activeView);
+
+    // Filtra match-rows
+    container.querySelectorAll('.match-row').forEach(function(row) {
+        const text = (row.dataset.teams + ' ' + row.dataset.liga).toLowerCase();
+        row.classList.toggle('hidden', q !== '' && !text.includes(q));
+    });
+
+    // Esconde league-cards sem jogos visíveis
+    container.querySelectorAll('.league-card').forEach(function(card) {
+        const visible = card.querySelectorAll('.match-row:not(.hidden)');
+        card.classList.toggle('hidden', visible.length === 0);
+    });
+});
+
+// === Feature 3: Toggle Jogos Futuros ===
+function toggleFutureOnly() {
+    const active = document.getElementById('future-only').checked;
+    const now = new Date();
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+    document.querySelectorAll('.match-row').forEach(function(row) {
+        const parts = row.dataset.hora.split(':');
+        const gameMinutes = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        if (active && gameMinutes < nowMinutes) {
+            row.classList.add('past-game');
+        } else {
+            row.classList.remove('past-game');
+        }
+    });
+
+    // Esconde cards que ficaram completamente vazios
+    document.querySelectorAll('.league-card').forEach(function(card) {
+        const visible = card.querySelectorAll('.match-row:not(.past-game):not(.hidden)');
+        card.style.display = (visible.length === 0 && active) ? 'none' : '';
+    });
+
+    localStorage.setItem('statsgreen_future_only', active);
+}
+
+// === Restaurar preferências do localStorage ===
+document.addEventListener('DOMContentLoaded', function() {
+    // Restaurar modo de visualização
+    const savedView = localStorage.getItem('statsgreen_view_mode');
+    if (savedView === 'hora') {
+        setView('hora');
+    }
+
+    // Restaurar toggle futuros
+    if (localStorage.getItem('statsgreen_future_only') === 'true') {
+        document.getElementById('future-only').checked = true;
+        toggleFutureOnly();
+    }
+});
+</script>
 {% endblock %}
