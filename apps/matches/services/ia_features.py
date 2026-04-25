@@ -64,11 +64,8 @@ def calcular_stats_time(df, team, data):
     stats['perigo_defensivo'] = stats['chutes_gol_contra'] / \
         (stats['chutes_contra'] + 0.001)
 
-    # xG Simplificado (Baseado em conversão de chutes no alvo)
-    # feature_engineering.py uses: rolling['chutes_gol_pro'] * (rolling['gols_pro'].mean() / (rolling['chutes_gol_pro'].mean() + 0.001))
-    # Here, stats['chutes_gol_pro'] is already the mean over the window.
-    stats['xG_estimado'] = stats['chutes_gol_pro'] * \
-        (stats['gols_pro'] / (stats['chutes_gol_pro'] + 0.001))
+    # xG Simplificado: média de gols na janela (alinhado com feature_engineering.py)
+    stats['xG_estimado'] = stats['gols_pro']
 
     cache.set(cache_key, stats, timeout=3600)
     return stats

@@ -16,8 +16,11 @@
     .odd-item { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-secondary); }
     .odd-val { font-weight: bold; color: white; }
     .value-badge { margin-top: 12px; font-size: 0.75rem; font-weight: bold; padding: 4px 8px; border-radius: 6px; display: inline-block; width: 100%; text-align: center;}
+    .value-high { background: rgba(255, 152, 0, 0.2); color: #ff9800; border: 1px solid rgba(255, 152, 0, 0.4); }
     .value-yes { background: rgba(76, 175, 80, 0.15); color: var(--accent-green); border: 1px solid rgba(76, 175, 80, 0.3); }
+    .value-moderate { background: rgba(100, 181, 246, 0.12); color: #64b5f6; border: 1px solid rgba(100, 181, 246, 0.3); }
     .value-no { background: rgba(255, 255, 255, 0.05); color: #888; border: 1px solid rgba(255, 255, 255, 0.1); }
+    .trust-badge { display: inline-block; font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; background: rgba(76,175,80,0.1); color: var(--accent-green); border: 1px solid rgba(76,175,80,0.2); margin-top: 6px; }
     .value-explanation { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 15px 20px; border-radius: 8px; margin-top: 20px; }
     .value-explanation ul { margin-top: 10px; padding-left: 20px; color: var(--text-secondary); font-size: 0.9em; line-height: 1.6; }
     .value-explanation li { margin-bottom: 8px; }
@@ -212,7 +215,14 @@
                         <div class="odd-item"><span class="odd-label">Mercado</span><span class="odd-val">{{ mercado_odd_h|floatformat:2 }}</span></div>
                     </div>
                     {% if valor_h.tem %}
-                        <div class="value-badge value-yes">🔥 +EV ({{ valor_h.margem }}%)</div>
+                        {% if valor_h.nivel == 'alto' %}
+                            <div class="value-badge value-high">🔥🔥 +EV Alto ({{ valor_h.margem }}%)</div>
+                        {% elif valor_h.nivel == 'medio' %}
+                            <div class="value-badge value-yes">🔥 +EV ({{ valor_h.margem }}%)</div>
+                        {% else %}
+                            <div class="value-badge value-moderate">📈 +EV Moderado ({{ valor_h.margem }}%)</div>
+                        {% endif %}
+                        {% if valor_h.confiavel %}<div class="trust-badge">✅ Mercado Favorito</div>{% endif %}
                     {% else %}
                         <div class="value-badge value-no">🚫 Sem Valor</div>
                     {% endif %}
@@ -238,7 +248,13 @@
                         <div class="odd-item"><span class="odd-label">Mercado</span><span class="odd-val">{{ mercado_odd_a|floatformat:2 }}</span></div>
                     </div>
                     {% if valor_a.tem %}
-                        <div class="value-badge value-yes">🔥 +EV ({{ valor_a.margem }}%)</div>
+                        {% if valor_a.nivel == 'alto' %}
+                            <div class="value-badge value-high">🔥🔥 +EV Alto ({{ valor_a.margem }}%)</div>
+                        {% elif valor_a.nivel == 'medio' %}
+                            <div class="value-badge value-yes">🔥 +EV ({{ valor_a.margem }}%)</div>
+                        {% else %}
+                            <div class="value-badge value-moderate">📈 +EV Moderado ({{ valor_a.margem }}%)</div>
+                        {% endif %}
                     {% else %}
                         <div class="value-badge value-no">🚫 Sem Valor</div>
                     {% endif %}
@@ -257,13 +273,13 @@
                 <p class="info-text" style="color: white; margin-bottom: 5px;">A Inteligência Artificial detectou odds desajustadas (mínimo de 7% de margem no preço justo):</p>
                 <ul>
                     {% if valor_h.tem %}
-                    <li>Aposta em <strong>Vitória {{ home_team }}</strong> possui Rentabilidade Esperada de <strong><span style="color: var(--accent-green);">{{ valor_h.margem }}%</span></strong>. O mercado oferece <strong>{{ mercado_odd_h|floatformat:2 }}</strong>, enquanto a Odd Justa projetada pela IA é de <strong>{{ analise.ia.odd_justa_casa|floatformat:2 }}</strong>.</li>
+                    <li>Aposta em <strong>Vitória {{ home_team }}</strong> possui Rentabilidade Esperada de <strong><span style="color: var(--accent-green);">{{ valor_h.margem }}%</span></strong>. O mercado oferece <strong>{{ mercado_odd_h|floatformat:2 }}</strong>, enquanto a Odd Justa projetada pela IA é de <strong>{{ analise.ia.odd_justa_casa|floatformat:2 }}</strong>. <span style="color: #64b5f6;">Edge vs Mercado: {{ valor_h.edge }}pp</span>{% if valor_h.confiavel %} <span style="color: var(--accent-green);">• Mercado Favorito</span>{% endif %}</li>
                     {% endif %}
                     {% if valor_d.tem %}
-                    <li>Aposta em <strong>Empate</strong> possui Rentabilidade Esperada de <strong><span style="color: var(--accent-green);">{{ valor_d.margem }}%</span></strong>. O mercado oferece <strong>{{ mercado_odd_d|floatformat:2 }}</strong>, enquanto a Odd Justa projetada pela IA é de <strong>{{ analise.ia.odd_justa_empate|floatformat:2 }}</strong>.</li>
+                    <li>Aposta em <strong>Empate</strong> possui Rentabilidade Esperada de <strong><span style="color: var(--accent-green);">{{ valor_d.margem }}%</span></strong>. O mercado oferece <strong>{{ mercado_odd_d|floatformat:2 }}</strong>, enquanto a Odd Justa projetada pela IA é de <strong>{{ analise.ia.odd_justa_empate|floatformat:2 }}</strong>. <span style="color: #64b5f6;">Edge vs Mercado: {{ valor_d.edge }}pp</span></li>
                     {% endif %}
                     {% if valor_a.tem %}
-                    <li>Aposta em <strong>Vitória {{ away_team }}</strong> possui Rentabilidade Esperada de <strong><span style="color: var(--accent-green);">{{ valor_a.margem }}%</span></strong>. O mercado oferece <strong>{{ mercado_odd_a|floatformat:2 }}</strong>, enquanto a Odd Justa projetada pela IA é de <strong>{{ analise.ia.odd_justa_fora|floatformat:2 }}</strong>.</li>
+                    <li>Aposta em <strong>Vitória {{ away_team }}</strong> possui Rentabilidade Esperada de <strong><span style="color: var(--accent-green);">{{ valor_a.margem }}%</span></strong>. O mercado oferece <strong>{{ mercado_odd_a|floatformat:2 }}</strong>, enquanto a Odd Justa projetada pela IA é de <strong>{{ analise.ia.odd_justa_fora|floatformat:2 }}</strong>. <span style="color: #64b5f6;">Edge vs Mercado: {{ valor_a.edge }}pp</span></li>
                     {% endif %}
                 </ul>
                 <div style="margin-top: 15px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05);">
@@ -296,25 +312,76 @@
             <h3 class="card-title">🏆 Insights da Partida</h3>
             {% if analise.ia and not analise.ia.erro %}
                 {% if analise.ia.prob_casa > analise.ia.prob_fora and analise.ia.prob_casa > analise.ia.prob_empate %}
-                <div style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.02)); border: 1px solid rgba(76, 175, 80, 0.3); border-left: 4px solid var(--accent-green); padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
-                    <div>
-                        <span style="font-size: 0.75em; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary);">Tendência IA</span>
-                        <h3 style="margin: 5px 0 0 0; color: var(--accent-green); font-size: 1.3em;">⭐ Favorito: {{ home_team }}</h3>
+                <div style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.02)); border: 1px solid rgba(76, 175, 80, 0.3); border-left: 4px solid var(--accent-green); padding: 14px 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <span style="font-size: 0.7em; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary);">Tendência IA</span>
+                            <h3 style="margin: 4px 0 0 0; color: var(--accent-green); font-size: 1.3em;">⭐ Favorito: {{ home_team }}</h3>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="font-size: 1.4em; font-weight: bold; color: var(--accent-green);">{{ analise.ia.prob_casa }}%</span>
+                            <div style="font-size: 0.75em; color: var(--text-secondary); margin-top: 2px;">
+                                Edge: <span style="color: {% if analise.ia.edge_casa > 0 %}var(--accent-green){% else %}#ff4444{% endif %}; font-weight: bold;">{{ analise.ia.edge_casa }}pp</span>
+                            </div>
+                        </div>
                     </div>
+                    {% if analise.ia.edge_casa > 5 %}
+                    <p style="font-size: 0.8em; color: var(--text-secondary); margin: 10px 0 0 0; padding-top: 8px; border-top: 1px solid rgba(76,175,80,0.15);">
+                        💡 A IA calcula <strong style="color: white;">{{ analise.ia.edge_casa }}pp a mais</strong> de probabilidade para {{ home_team }} do que o mercado sugere. Quanto maior o edge, mais o modelo discorda das odds.
+                    </p>
+                    {% elif analise.ia.edge_casa > 0 %}
+                    <p style="font-size: 0.8em; color: var(--text-secondary); margin: 10px 0 0 0; padding-top: 8px; border-top: 1px solid rgba(76,175,80,0.15);">
+                        📊 A IA enxerga <strong style="color: white;">leve vantagem</strong> para {{ home_team }} além do que o mercado precifica ({{ analise.ia.edge_casa }}pp).
+                    </p>
+                    {% else %}
+                    <p style="font-size: 0.8em; color: var(--text-secondary); margin: 10px 0 0 0; padding-top: 8px; border-top: 1px solid rgba(76,175,80,0.15);">
+                        ⚠️ {{ home_team }} é favorito, mas a IA <strong style="color: #ffa000;">concorda com o mercado</strong>. As odds já refletem essa vantagem.
+                    </p>
+                    {% endif %}
                 </div>
                 {% elif analise.ia.prob_fora > analise.ia.prob_casa and analise.ia.prob_fora > analise.ia.prob_empate %}
-                <div style="background: linear-gradient(135deg, rgba(244, 67, 54, 0.15), rgba(244, 67, 54, 0.02)); border: 1px solid rgba(244, 67, 54, 0.3); border-left: 4px solid var(--accent-red); padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
-                    <div>
-                        <span style="font-size: 0.75em; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary);">Tendência IA</span>
-                        <h3 style="margin: 5px 0 0 0; color: var(--accent-red); font-size: 1.3em;">⭐ Favorito: {{ away_team }}</h3>
+                <div style="background: linear-gradient(135deg, rgba(244, 67, 54, 0.15), rgba(244, 67, 54, 0.02)); border: 1px solid rgba(244, 67, 54, 0.3); border-left: 4px solid var(--accent-red); padding: 14px 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <span style="font-size: 0.7em; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary);">Tendência IA</span>
+                            <h3 style="margin: 4px 0 0 0; color: var(--accent-red); font-size: 1.3em;">⭐ Favorito: {{ away_team }}</h3>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="font-size: 1.4em; font-weight: bold; color: var(--accent-red);">{{ analise.ia.prob_fora }}%</span>
+                            <div style="font-size: 0.75em; color: var(--text-secondary); margin-top: 2px;">
+                                Edge: <span style="color: {% if analise.ia.edge_fora > 0 %}var(--accent-green){% else %}#ff4444{% endif %}; font-weight: bold;">{{ analise.ia.edge_fora }}pp</span>
+                            </div>
+                        </div>
                     </div>
+                    {% if analise.ia.edge_fora > 5 %}
+                    <p style="font-size: 0.8em; color: var(--text-secondary); margin: 10px 0 0 0; padding-top: 8px; border-top: 1px solid rgba(244,67,54,0.15);">
+                        💡 A IA calcula <strong style="color: white;">{{ analise.ia.edge_fora }}pp a mais</strong> de probabilidade para {{ away_team }} do que o mercado sugere.
+                    </p>
+                    {% elif analise.ia.edge_fora > 0 %}
+                    <p style="font-size: 0.8em; color: var(--text-secondary); margin: 10px 0 0 0; padding-top: 8px; border-top: 1px solid rgba(244,67,54,0.15);">
+                        📊 A IA enxerga <strong style="color: white;">leve vantagem</strong> para {{ away_team }} além do que o mercado precifica ({{ analise.ia.edge_fora }}pp).
+                    </p>
+                    {% else %}
+                    <p style="font-size: 0.8em; color: var(--text-secondary); margin: 10px 0 0 0; padding-top: 8px; border-top: 1px solid rgba(244,67,54,0.15);">
+                        ⚠️ {{ away_team }} é favorito, mas a IA <strong style="color: #ffa000;">concorda com o mercado</strong>. As odds já refletem essa vantagem.
+                    </p>
+                    {% endif %}
                 </div>
                 {% else %}
-                <div style="background: linear-gradient(135deg, rgba(255, 160, 0, 0.15), rgba(255, 160, 0, 0.02)); border: 1px solid rgba(255, 160, 0, 0.3); border-left: 4px solid #ffa000; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
-                    <div>
-                        <span style="font-size: 0.75em; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary);">Tendência IA</span>
-                        <h3 style="margin: 5px 0 0 0; color: #ffa000; font-size: 1.3em;">⚖️ Tendência de Empate</h3>
+                <div style="background: linear-gradient(135deg, rgba(255, 160, 0, 0.15), rgba(255, 160, 0, 0.02)); border: 1px solid rgba(255, 160, 0, 0.3); border-left: 4px solid #ffa000; padding: 14px 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <span style="font-size: 0.7em; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary);">Tendência IA</span>
+                            <h3 style="margin: 4px 0 0 0; color: #ffa000; font-size: 1.3em;">⚖️ Jogo Equilibrado</h3>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="font-size: 1.1em; font-weight: bold; color: #ffa000;">{{ analise.ia.prob_empate }}%</span>
+                            <div style="font-size: 0.7em; color: var(--text-secondary); margin-top: 2px;">prob. empate</div>
+                        </div>
                     </div>
+                    <p style="font-size: 0.8em; color: var(--text-secondary); margin: 10px 0 0 0; padding-top: 8px; border-top: 1px solid rgba(255,160,0,0.15);">
+                        ⚠️ A IA não encontra um favorito claro. Partidas equilibradas tendem a ser <strong style="color: #ffa000;">menos previsíveis</strong> — cautela recomendada.
+                    </p>
                 </div>
                 {% endif %}
             {% endif %}

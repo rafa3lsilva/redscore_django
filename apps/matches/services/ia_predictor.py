@@ -94,37 +94,26 @@ def calcular_probabilidades_ia(
         features['away_gols_pro_rel'] = adj_a_gols / base_gols
         features['diff_gols_pro'] = adj_h_gols - adj_a_gols
 
-        # 2. Resultado Num (Forma) - Pure differentials
+        # 2. Resultado Num (Forma) - Diferencial apenas
         adj_h_res = stats_home['resultado_num'] * factor
         adj_a_res = stats_away['resultado_num'] * factor
-        
-        features['home_resultado_num'] = adj_h_res
-        features['away_resultado_num'] = adj_a_res
         features['diff_resultado_num'] = adj_h_res - adj_a_res
 
-        # 3. Eficiência e Perigo (Pure differentials)
-        features['home_eficiencia_ofensiva'] = stats_home['eficiencia_ofensiva'] * factor
-        features['away_eficiencia_ofensiva'] = stats_away['eficiencia_ofensiva'] * factor
-        features['diff_eficiencia_ofensiva'] = (
-            features['home_eficiencia_ofensiva'] - features['away_eficiencia_ofensiva']
-        )
+        # 3. Eficiência e Perigo (Diferenciais apenas)
+        adj_h_efic = stats_home['eficiencia_ofensiva'] * factor
+        adj_a_efic = stats_away['eficiencia_ofensiva'] * factor
+        features['diff_eficiencia_ofensiva'] = adj_h_efic - adj_a_efic
 
-        features['home_perigo_defensivo'] = stats_home['perigo_defensivo'] * factor
-        features['away_perigo_defensivo'] = stats_away['perigo_defensivo'] * factor
-        features['diff_perigo_defensivo'] = (
-            features['home_perigo_defensivo'] - features['away_perigo_defensivo']
-        )
+        adj_h_perigo = stats_home['perigo_defensivo'] * factor
+        adj_a_perigo = stats_away['perigo_defensivo'] * factor
+        features['diff_perigo_defensivo'] = adj_h_perigo - adj_a_perigo
 
-        # 4. xG Estimado (Pure differentials)
-        features['home_xG_estimado'] = stats_home['xG_estimado'] * factor
-        features['away_xG_estimado'] = stats_away['xG_estimado'] * factor
-        features['diff_xG_estimado'] = features['home_xG_estimado'] - features['away_xG_estimado']
+        # 4. xG Estimado (Diferencial apenas)
+        adj_h_xg = stats_home['xG_estimado'] * factor
+        adj_a_xg = stats_away['xG_estimado'] * factor
+        features['diff_xG_estimado'] = adj_h_xg - adj_a_xg
 
-        # 5. Odds and Probabilidades Justas
-        features['Odd_H'] = odd_h
-        features['Odd_D'] = odd_d
-        features['Odd_A'] = odd_a
-
+        # 5. Probabilidades Justas (sem odds brutas — modelo usa apenas prob_justa)
         p_h_j, p_d_j, p_a_j = remover_juice_odds(odd_h, odd_d, odd_a)
         features['prob_justa_h'] = p_h_j
         features['prob_justa_d'] = p_d_j
@@ -137,6 +126,14 @@ def calcular_probabilidades_ia(
         prob_h, prob_d, prob_a = probs
         fallback = False
 
+    # Probabilidades justas do mercado (sem juice) para cálculo de edge
+    if not fallback:
+        edge_h = float(prob_h - p_h_j) * 100
+        edge_d = float(prob_d - p_d_j) * 100
+        edge_a = float(prob_a - p_a_j) * 100
+    else:
+        edge_h = edge_d = edge_a = 0.0
+
     res = {
         'prob_casa': round(float(prob_h * 100), 2),
         'prob_empate': round(float(prob_d * 100), 2),
@@ -144,6 +141,10 @@ def calcular_probabilidades_ia(
         'odd_justa_casa': round(float(1 / prob_h), 2) if prob_h > 0 else 0.0,
         'odd_justa_empate': round(float(1 / prob_d), 2) if prob_d > 0 else 0.0,
         'odd_justa_fora': round(float(1 / prob_a), 2) if prob_a > 0 else 0.0,
+        # Edge vs Mercado (prob_IA - prob_mercado_sem_juice)
+        'edge_casa': round(edge_h, 2),
+        'edge_empate': round(edge_d, 2),
+        'edge_fora': round(edge_a, 2),
         'fallback': fallback
     }
     

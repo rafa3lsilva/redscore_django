@@ -219,16 +219,48 @@ def analise_jogo(request):
             )
             context['analise']['ia'] = preds
 
-            # Cálculo de Valor: mínimo 7% de espaço
-            def calcular_valor(mercado, justa):
-                if justa > 0 and mercado:
-                    margem_pct = ((mercado / justa) - 1) * 100
-                    return {'tem': margem_pct >= 7.0, 'margem': round(margem_pct, 1)}
-                return {'tem': False, 'margem': 0.0}
+            # Cálculo de Valor com filtros baseados no backtest
+            def calcular_valor(mercado_nome, odd_mercado, odd_justa, edge_vs_mercado):
+                """Calcula valor com filtros rigorosos baseados no backtest."""
+                if odd_justa <= 0 or not odd_mercado:
+                    return {'tem': False, 'margem': 0.0, 'nivel': '', 'edge': 0.0, 'confiavel': False}
+                
+                margem_pct = ((odd_mercado / odd_justa) - 1) * 100
+                
+                # Filtros baseados no backtest:
+                # 1. Margem mínima de 7% (já existia)
+                # 2. Edge vs mercado >= 3% (novo — elimina falsos positivos)
+                # 3. Odd máxima 3.50 (novo — odds altas têm -28% yield no backtest)
+                # 4. Empate desabilitado (amostra insuficiente: 22 apostas)
+                tem_valor = (
+                    margem_pct >= 7.0 and
+                    edge_vs_mercado >= 3.0 and
+                    odd_mercado <= 3.50 and
+                    mercado_nome != 'Empate'
+                )
+                
+                # Nível de confiança baseado nas faixas de EV do backtest
+                if not tem_valor:
+                    nivel = ''
+                elif margem_pct >= 15:
+                    nivel = 'alto'      # Backtest: yield +12.8% a +13.9%
+                elif margem_pct >= 10:
+                    nivel = 'medio'     # Backtest: yield +13.5%
+                else:
+                    nivel = 'moderado'  # Backtest: yield +4.3%
+                
+                return {
+                    'tem': tem_valor,
+                    'margem': round(margem_pct, 1),
+                    'nivel': nivel,
+                    'edge': round(edge_vs_mercado, 1),
+                    'confiavel': mercado_nome == 'Casa'  # Casa é o mais confiável no backtest
+                }
 
-            context['valor_h'] = calcular_valor(odd_h, preds.get('odd_justa_casa', 0))
-            context['valor_d'] = calcular_valor(odd_d, preds.get('odd_justa_empate', 0))
-            context['valor_a'] = calcular_valor(odd_a, preds.get('odd_justa_fora', 0))
+            ia = preds
+            context['valor_h'] = calcular_valor('Casa', odd_h, ia.get('odd_justa_casa', 0), ia.get('edge_casa', 0))
+            context['valor_d'] = calcular_valor('Empate', odd_d, ia.get('odd_justa_empate', 0), ia.get('edge_empate', 0))
+            context['valor_a'] = calcular_valor('Fora', odd_a, ia.get('odd_justa_fora', 0), ia.get('edge_fora', 0))
             
             print(f"✅ Resultado IA: {preds}")
         except Exception as e:
