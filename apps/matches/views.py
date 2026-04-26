@@ -220,8 +220,11 @@ def analise_jogo(request):
             context['analise']['ia'] = preds
 
             # Cálculo de Valor com filtros baseados no backtest
-            def calcular_valor(mercado_nome, odd_mercado, odd_justa, edge_vs_mercado):
-                """Calcula valor com filtros rigorosos baseados no backtest."""
+            def calcular_valor(mercado_nome, odd_mercado, odd_justa, edge_display, edge_filtro):
+                """Calcula valor com filtros rigorosos baseados no backtest.
+                edge_display: prob_IA - 1/odd (para mostrar ao usuário)
+                edge_filtro: prob_IA - prob_sem_juice (para threshold interno)
+                """
                 if odd_justa <= 0 or not odd_mercado:
                     return {'tem': False, 'margem': 0.0, 'nivel': '', 'edge': 0.0, 'confiavel': False}
                 
@@ -229,12 +232,12 @@ def analise_jogo(request):
                 
                 # Filtros baseados no backtest:
                 # 1. Margem mínima de 7% (já existia)
-                # 2. Edge vs mercado >= 3% (novo — elimina falsos positivos)
+                # 2. Edge filtro vs mercado >= 3% (prob_IA vs prob_sem_juice)
                 # 3. Odd máxima 3.50 (novo — odds altas têm -28% yield no backtest)
                 # 4. Empate desabilitado (amostra insuficiente: 22 apostas)
                 tem_valor = (
                     margem_pct >= 7.0 and
-                    edge_vs_mercado >= 3.0 and
+                    edge_filtro >= 3.0 and
                     odd_mercado <= 3.50 and
                     mercado_nome != 'Empate'
                 )
@@ -253,14 +256,17 @@ def analise_jogo(request):
                     'tem': tem_valor,
                     'margem': round(margem_pct, 1),
                     'nivel': nivel,
-                    'edge': round(edge_vs_mercado, 1),
-                    'confiavel': mercado_nome == 'Casa'  # Casa é o mais confiável no backtest
+                    'edge': round(edge_display, 1),  # Edge real para exibição
+                    'confiavel': mercado_nome == 'Casa'
                 }
 
             ia = preds
-            context['valor_h'] = calcular_valor('Casa', odd_h, ia.get('odd_justa_casa', 0), ia.get('edge_casa', 0))
-            context['valor_d'] = calcular_valor('Empate', odd_d, ia.get('odd_justa_empate', 0), ia.get('edge_empate', 0))
-            context['valor_a'] = calcular_valor('Fora', odd_a, ia.get('odd_justa_fora', 0), ia.get('edge_fora', 0))
+            context['valor_h'] = calcular_valor('Casa', odd_h, ia.get('odd_justa_casa', 0),
+                ia.get('edge_casa', 0), ia.get('edge_filtro_casa', 0))
+            context['valor_d'] = calcular_valor('Empate', odd_d, ia.get('odd_justa_empate', 0),
+                ia.get('edge_empate', 0), ia.get('edge_filtro_empate', 0))
+            context['valor_a'] = calcular_valor('Fora', odd_a, ia.get('odd_justa_fora', 0),
+                ia.get('edge_fora', 0), ia.get('edge_filtro_fora', 0))
             
             print(f"✅ Resultado IA: {preds}")
         except Exception as e:

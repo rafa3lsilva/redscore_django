@@ -273,13 +273,13 @@
                 <p class="info-text" style="color: white; margin-bottom: 5px;">A Inteligência Artificial detectou odds desajustadas (mínimo de 7% de margem no preço justo):</p>
                 <ul>
                     {% if valor_h.tem %}
-                    <li>Aposta em <strong>Vitória {{ home_team }}</strong> possui Rentabilidade Esperada de <strong><span style="color: var(--accent-green);">{{ valor_h.margem }}%</span></strong>. O mercado oferece <strong>{{ mercado_odd_h|floatformat:2 }}</strong>, enquanto a Odd Justa projetada pela IA é de <strong>{{ analise.ia.odd_justa_casa|floatformat:2 }}</strong>. <span style="color: #64b5f6;">Edge vs Mercado: {{ valor_h.edge }}pp</span>{% if valor_h.confiavel %} <span style="color: var(--accent-green);">• Mercado Favorito</span>{% endif %}</li>
+                    <li>Aposta em <strong>Vitória {{ home_team }}</strong> possui Rentabilidade Esperada de <strong><span style="color: var(--accent-green);">{{ valor_h.margem }}%</span></strong>. O mercado oferece <strong>{{ mercado_odd_h|floatformat:2 }}</strong>, enquanto a Odd Justa projetada pela IA é de <strong>{{ analise.ia.odd_justa_casa|floatformat:2 }}</strong>. <span style="color: #64b5f6;">IA vê {{ valor_h.edge }}% a mais que o mercado</span>{% if valor_h.confiavel %} <span style="color: var(--accent-green);">• Mercado Favorito</span>{% endif %}</li>
                     {% endif %}
                     {% if valor_d.tem %}
-                    <li>Aposta em <strong>Empate</strong> possui Rentabilidade Esperada de <strong><span style="color: var(--accent-green);">{{ valor_d.margem }}%</span></strong>. O mercado oferece <strong>{{ mercado_odd_d|floatformat:2 }}</strong>, enquanto a Odd Justa projetada pela IA é de <strong>{{ analise.ia.odd_justa_empate|floatformat:2 }}</strong>. <span style="color: #64b5f6;">Edge vs Mercado: {{ valor_d.edge }}pp</span></li>
+                    <li>Aposta em <strong>Empate</strong> possui Rentabilidade Esperada de <strong><span style="color: var(--accent-green);">{{ valor_d.margem }}%</span></strong>. O mercado oferece <strong>{{ mercado_odd_d|floatformat:2 }}</strong>, enquanto a Odd Justa projetada pela IA é de <strong>{{ analise.ia.odd_justa_empate|floatformat:2 }}</strong>. <span style="color: #64b5f6;">IA vê {{ valor_d.edge }}% a mais que o mercado</span></li>
                     {% endif %}
                     {% if valor_a.tem %}
-                    <li>Aposta em <strong>Vitória {{ away_team }}</strong> possui Rentabilidade Esperada de <strong><span style="color: var(--accent-green);">{{ valor_a.margem }}%</span></strong>. O mercado oferece <strong>{{ mercado_odd_a|floatformat:2 }}</strong>, enquanto a Odd Justa projetada pela IA é de <strong>{{ analise.ia.odd_justa_fora|floatformat:2 }}</strong>. <span style="color: #64b5f6;">Edge vs Mercado: {{ valor_a.edge }}pp</span></li>
+                    <li>Aposta em <strong>Vitória {{ away_team }}</strong> possui Rentabilidade Esperada de <strong><span style="color: var(--accent-green);">{{ valor_a.margem }}%</span></strong>. O mercado oferece <strong>{{ mercado_odd_a|floatformat:2 }}</strong>, enquanto a Odd Justa projetada pela IA é de <strong>{{ analise.ia.odd_justa_fora|floatformat:2 }}</strong>. <span style="color: #64b5f6;">IA vê {{ valor_a.edge }}% a mais que o mercado</span></li>
                     {% endif %}
                 </ul>
                 <div style="margin-top: 15px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05);">
@@ -321,17 +321,21 @@
                         <div style="text-align: right;">
                             <span style="font-size: 1.4em; font-weight: bold; color: var(--accent-green);">{{ analise.ia.prob_casa }}%</span>
                             <div style="font-size: 0.75em; color: var(--text-secondary); margin-top: 2px;">
-                                Edge: <span style="color: {% if analise.ia.edge_casa > 0 %}var(--accent-green){% else %}#ff4444{% endif %}; font-weight: bold;">{{ analise.ia.edge_casa }}pp</span>
+                                {% if analise.ia.edge_casa > 0 %}
+                                <span style="color: var(--accent-green); font-weight: bold;">+{{ analise.ia.edge_casa }}% acima do mercado</span>
+                                {% else %}
+                                <span style="color: #ff4444; font-weight: bold;">{{ analise.ia.edge_casa }}% vs mercado</span>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
                     {% if analise.ia.edge_casa > 5 %}
                     <p style="font-size: 0.8em; color: var(--text-secondary); margin: 10px 0 0 0; padding-top: 8px; border-top: 1px solid rgba(76,175,80,0.15);">
-                        💡 A IA calcula <strong style="color: white;">{{ analise.ia.edge_casa }}pp a mais</strong> de probabilidade para {{ home_team }} do que o mercado sugere. Quanto maior o edge, mais o modelo discorda das odds.
+                        💡 A IA calcula <strong style="color: white;">{{ analise.ia.edge_casa }}% a mais</strong> de chance para {{ home_team }} do que as odds sugerem. Quanto maior a diferença, maior a oportunidade.
                     </p>
                     {% elif analise.ia.edge_casa > 0 %}
                     <p style="font-size: 0.8em; color: var(--text-secondary); margin: 10px 0 0 0; padding-top: 8px; border-top: 1px solid rgba(76,175,80,0.15);">
-                        📊 A IA enxerga <strong style="color: white;">leve vantagem</strong> para {{ home_team }} além do que o mercado precifica ({{ analise.ia.edge_casa }}pp).
+                        📊 A IA enxerga <strong style="color: white;">leve vantagem</strong> para {{ home_team }} além do que o mercado precifica ({{ analise.ia.edge_casa }}% acima).
                     </p>
                     {% else %}
                     <p style="font-size: 0.8em; color: var(--text-secondary); margin: 10px 0 0 0; padding-top: 8px; border-top: 1px solid rgba(76,175,80,0.15);">
@@ -349,17 +353,21 @@
                         <div style="text-align: right;">
                             <span style="font-size: 1.4em; font-weight: bold; color: var(--accent-red);">{{ analise.ia.prob_fora }}%</span>
                             <div style="font-size: 0.75em; color: var(--text-secondary); margin-top: 2px;">
-                                Edge: <span style="color: {% if analise.ia.edge_fora > 0 %}var(--accent-green){% else %}#ff4444{% endif %}; font-weight: bold;">{{ analise.ia.edge_fora }}pp</span>
+                                {% if analise.ia.edge_fora > 0 %}
+                                <span style="color: var(--accent-green); font-weight: bold;">+{{ analise.ia.edge_fora }}% acima do mercado</span>
+                                {% else %}
+                                <span style="color: #ff4444; font-weight: bold;">{{ analise.ia.edge_fora }}% vs mercado</span>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
                     {% if analise.ia.edge_fora > 5 %}
                     <p style="font-size: 0.8em; color: var(--text-secondary); margin: 10px 0 0 0; padding-top: 8px; border-top: 1px solid rgba(244,67,54,0.15);">
-                        💡 A IA calcula <strong style="color: white;">{{ analise.ia.edge_fora }}pp a mais</strong> de probabilidade para {{ away_team }} do que o mercado sugere.
+                        💡 A IA calcula <strong style="color: white;">{{ analise.ia.edge_fora }}% a mais</strong> de chance para {{ away_team }} do que as odds sugerem.
                     </p>
                     {% elif analise.ia.edge_fora > 0 %}
                     <p style="font-size: 0.8em; color: var(--text-secondary); margin: 10px 0 0 0; padding-top: 8px; border-top: 1px solid rgba(244,67,54,0.15);">
-                        📊 A IA enxerga <strong style="color: white;">leve vantagem</strong> para {{ away_team }} além do que o mercado precifica ({{ analise.ia.edge_fora }}pp).
+                        📊 A IA enxerga <strong style="color: white;">leve vantagem</strong> para {{ away_team }} além do que o mercado precifica ({{ analise.ia.edge_fora }}% acima).
                     </p>
                     {% else %}
                     <p style="font-size: 0.8em; color: var(--text-secondary); margin: 10px 0 0 0; padding-top: 8px; border-top: 1px solid rgba(244,67,54,0.15);">

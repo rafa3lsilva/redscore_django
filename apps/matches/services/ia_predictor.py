@@ -126,13 +126,25 @@ def calcular_probabilidades_ia(
         prob_h, prob_d, prob_a = probs
         fallback = False
 
-    # Probabilidades justas do mercado (sem juice) para cálculo de edge
+    # Edge calculations
     if not fallback:
-        edge_h = float(prob_h - p_h_j) * 100
-        edge_d = float(prob_d - p_d_j) * 100
-        edge_a = float(prob_a - p_a_j) * 100
+        # Edge para EXIBIÇÃO: prob_IA vs prob implícita bruta (1/odd)
+        # Isso é o que o usuário vê: "odd 1.61 = 62.1%, IA diz 59.1% → edge = -3.0%"
+        raw_h = 1 / odd_h
+        raw_d = 1 / odd_d
+        raw_a = 1 / odd_a
+        edge_h = float(prob_h - raw_h) * 100
+        edge_d = float(prob_d - raw_d) * 100
+        edge_a = float(prob_a - raw_a) * 100
+
+        # Edge para FILTRO de valor: prob_IA vs prob sem juice
+        # Usado internamente no calcular_valor para threshold de 3%
+        edge_filtro_h = float(prob_h - p_h_j) * 100
+        edge_filtro_d = float(prob_d - p_d_j) * 100
+        edge_filtro_a = float(prob_a - p_a_j) * 100
     else:
         edge_h = edge_d = edge_a = 0.0
+        edge_filtro_h = edge_filtro_d = edge_filtro_a = 0.0
 
     res = {
         'prob_casa': round(float(prob_h * 100), 2),
@@ -141,10 +153,14 @@ def calcular_probabilidades_ia(
         'odd_justa_casa': round(float(1 / prob_h), 2) if prob_h > 0 else 0.0,
         'odd_justa_empate': round(float(1 / prob_d), 2) if prob_d > 0 else 0.0,
         'odd_justa_fora': round(float(1 / prob_a), 2) if prob_a > 0 else 0.0,
-        # Edge vs Mercado (prob_IA - prob_mercado_sem_juice)
+        # Edge para exibição (prob_IA vs 1/odd_mercado)
         'edge_casa': round(edge_h, 2),
         'edge_empate': round(edge_d, 2),
         'edge_fora': round(edge_a, 2),
+        # Edge para filtro interno (prob_IA vs prob_sem_juice)
+        'edge_filtro_casa': round(edge_filtro_h, 2),
+        'edge_filtro_empate': round(edge_filtro_d, 2),
+        'edge_filtro_fora': round(edge_filtro_a, 2),
         'fallback': fallback
     }
     
