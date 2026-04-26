@@ -15,12 +15,12 @@
     .odds-comparison { margin-top: 15px; width: 100%; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 10px; display: flex; flex-direction: column; gap: 5px; }
     .odd-item { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-secondary); }
     .odd-val { font-weight: bold; color: white; }
-    .value-badge { margin-top: 12px; font-size: 0.75rem; font-weight: bold; padding: 4px 8px; border-radius: 6px; display: inline-block; width: 100%; text-align: center;}
-    .value-high { background: rgba(255, 152, 0, 0.2); color: #ff9800; border: 1px solid rgba(255, 152, 0, 0.4); }
-    .value-yes { background: rgba(76, 175, 80, 0.15); color: var(--accent-green); border: 1px solid rgba(76, 175, 80, 0.3); }
-    .value-moderate { background: rgba(100, 181, 246, 0.12); color: #64b5f6; border: 1px solid rgba(100, 181, 246, 0.3); }
-    .value-no { background: rgba(255, 255, 255, 0.05); color: #888; border: 1px solid rgba(255, 255, 255, 0.1); }
-    .trust-badge { display: inline-block; font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; background: rgba(76,175,80,0.1); color: var(--accent-green); border: 1px solid rgba(76,175,80,0.2); margin-top: 6px; }
+    .value-badge { margin-top: 12px; font-size: 0.75rem; font-weight: bold; padding: 6px 8px; border-radius: 6px; display: inline-block; width: 100%; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
+    .value-high { background: rgba(255, 77, 0, 0.15); color: #ff4d00; border: 1px solid rgba(255, 77, 0, 0.4); box-shadow: 0 0 10px rgba(255, 77, 0, 0.1); }
+    .value-yes { background: rgba(76, 175, 80, 0.12); color: #4caf50; border: 1px solid rgba(76, 175, 80, 0.3); }
+    .value-moderate { background: rgba(33, 150, 243, 0.1); color: #2196f3; border: 1px solid rgba(33, 150, 243, 0.25); }
+    .value-no { background: rgba(255, 255, 255, 0.03); color: #666; border: 1px solid rgba(255, 255, 255, 0.05); }
+    .trust-badge { display: inline-block; font-size: 0.7rem; padding: 3px 10px; border-radius: 4px; background: linear-gradient(to right, rgba(76,175,80,0.2), rgba(76,175,80,0.05)); color: #4caf50; border: 1px solid rgba(76,175,80,0.3); margin-top: 8px; width: 100%; text-align: center; font-weight: bold; }
     .value-explanation { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 15px 20px; border-radius: 8px; margin-top: 20px; }
     .value-explanation ul { margin-top: 10px; padding-left: 20px; color: var(--text-secondary); font-size: 0.9em; line-height: 1.6; }
     .value-explanation li { margin-bottom: 8px; }
@@ -216,13 +216,15 @@
                     </div>
                     {% if valor_h.tem %}
                         {% if valor_h.nivel == 'alto' %}
-                            <div class="value-badge value-high">🔥🔥 +EV Alto ({{ valor_h.margem }}%)</div>
+                            <div class="value-badge value-high">🔥🔥 Alto ({{ valor_h.margem }}% EV)</div>
                         {% elif valor_h.nivel == 'medio' %}
-                            <div class="value-badge value-yes">🔥 +EV ({{ valor_h.margem }}%)</div>
+                            <div class="value-badge value-yes">🔥 Médio ({{ valor_h.margem }}% EV)</div>
                         {% else %}
-                            <div class="value-badge value-moderate">📈 +EV Moderado ({{ valor_h.margem }}%)</div>
+                            <div class="value-badge value-moderate">📈 Moderado ({{ valor_h.margem }}% EV)</div>
                         {% endif %}
-                        {% if valor_h.confiavel %}<div class="trust-badge">✅ Mercado Favorito</div>{% endif %}
+                        {% if valor_h.confiavel %}
+                            <div class="trust-badge">✅ Mercado Favorito</div>
+                        {% endif %}
                     {% else %}
                         <div class="value-badge value-no">🚫 Sem Valor</div>
                     {% endif %}
@@ -235,7 +237,7 @@
                         <div class="odd-item"><span class="odd-label">Mercado</span><span class="odd-val">{{ mercado_odd_d|floatformat:2 }}</span></div>
                     </div>
                     {% if valor_d.tem %}
-                        <div class="value-badge value-yes">🔥 +EV ({{ valor_d.margem }}%)</div>
+                        <div class="value-badge value-yes">🔥 Médio ({{ valor_d.margem }}% EV)</div>
                     {% else %}
                         <div class="value-badge value-no">🚫 Sem Valor</div>
                     {% endif %}
@@ -249,11 +251,11 @@
                     </div>
                     {% if valor_a.tem %}
                         {% if valor_a.nivel == 'alto' %}
-                            <div class="value-badge value-high">🔥🔥 +EV Alto ({{ valor_a.margem }}%)</div>
+                            <div class="value-badge value-high">🔥🔥 Alto ({{ valor_a.margem }}% EV)</div>
                         {% elif valor_a.nivel == 'medio' %}
-                            <div class="value-badge value-yes">🔥 +EV ({{ valor_a.margem }}%)</div>
+                            <div class="value-badge value-yes">🔥 Médio ({{ valor_a.margem }}% EV)</div>
                         {% else %}
-                            <div class="value-badge value-moderate">📈 +EV Moderado ({{ valor_a.margem }}%)</div>
+                            <div class="value-badge value-moderate">📈 Moderado ({{ valor_a.margem }}% EV)</div>
                         {% endif %}
                     {% else %}
                         <div class="value-badge value-no">🚫 Sem Valor</div>
