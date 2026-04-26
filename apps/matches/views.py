@@ -215,7 +215,8 @@ def analise_jogo(request):
         try:
             print(f"🤖 Rodando IA... Com Peso Recente = {peso_atual}%")
             preds = ia_predictor.calcular_probabilidades_ia(
-                home, away, liga, odd_h, odd_d, odd_a, df_historico, peso_atual
+                home, away, liga, odd_h, odd_d, odd_a, df_historico, peso_atual,
+                data_alvo=data_jogo
             )
             context['analise']['ia'] = preds
 

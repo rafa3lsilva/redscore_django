@@ -47,7 +47,8 @@ def calcular_probabilidades_ia(
     odd_d: float,
     odd_a: float,
     df_historico,
-    peso_recente: int = 50
+    peso_recente: int = 50,
+    data_alvo: str = None
 ):
     # Caching predictions
     cache_key_str = f"ia_pred_{home}_{away}_{liga}_{odd_h}_{odd_d}_{odd_a}_{peso_recente}_{df_historico.shape}"
@@ -63,8 +64,11 @@ def calcular_probabilidades_ia(
     feature_names = FEATURE_NAMES
 
     # --- Data do jogo ---
-    # df_historico['Data'] is already datetime from data_service
-    data_jogo = df_historico['Data'].max() + pd.Timedelta(days=1)
+    if data_alvo:
+        data_jogo = pd.to_datetime(data_alvo)
+    else:
+        # Fallback para o dia seguinte ao último registro (legado)
+        data_jogo = df_historico['Data'].max() + pd.Timedelta(days=1)
 
     # --- Stats ---
     stats_home = calcular_stats_time(df_historico, home, data_jogo)
@@ -113,11 +117,14 @@ def calcular_probabilidades_ia(
         adj_a_xg = stats_away['xG_estimado'] * factor
         features['diff_xG_estimado'] = adj_h_xg - adj_a_xg
 
-        # 5. Probabilidades Justas (sem odds brutas — modelo usa apenas prob_justa)
+        # 5. Probabilidades Justas (sem juice)
         p_h_j, p_d_j, p_a_j = remover_juice_odds(odd_h, odd_d, odd_a)
         features['prob_justa_h'] = p_h_j
         features['prob_justa_d'] = p_d_j
         features['prob_justa_a'] = p_a_j
+
+        # Debug para verificar se estamos caindo no fallback ou calculando features reais
+        print(f"📊 IA Features ({home} vs {away}): Prob Justa H={p_h_j:.4f}, factor={factor}")
 
         # --- DataFrame alinhado com a ordem exata do treinamento ---
         X = pd.DataFrame([features], columns=feature_names)

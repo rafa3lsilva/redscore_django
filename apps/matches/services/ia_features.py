@@ -20,7 +20,8 @@ def calcular_stats_time(df, team, data):
         return cached_result
 
     # Optimized filtering: df is already sorted by Data in data_service
-    mask = ((df['Home'] == team) | (df['Away'] == team)) & (df['Data'] < data)
+    # Optimized filtering: case-insensitive to handle different data sources
+    mask = ((df['Home'].str.lower() == team.lower()) | (df['Away'].str.lower() == team.lower())) & (df['Data'] < data)
     df_t = df[mask].tail(WINDOW)
 
     if len(df_t) < WINDOW:
@@ -77,7 +78,8 @@ def calcular_media_liga(df, liga, data):
     if cached_result:
         return cached_result
 
-    mask = (df['League'] == liga) & (df['Data'] < data)
+    # Case-insensitive league filtering
+    mask = (df['League'].str.lower() == liga.lower()) & (df['Data'] < data)
     df_l = df[mask].tail(WINDOW)
 
     if len(df_l) < WINDOW:
