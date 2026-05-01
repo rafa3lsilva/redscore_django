@@ -220,28 +220,32 @@ def analise_jogo(request):
             )
             context['analise']['ia'] = preds
 
-            # Cálculo de Valor com filtros baseados no backtest
-            def calcular_valor(mercado_nome, odd_mercado, odd_justa, edge_display, edge_filtro):
-                """Calcula valor com filtros rigorosos baseados no backtest.
-                edge_display: prob_IA - 1/odd (para mostrar ao usuário)
-                edge_filtro: prob_IA - prob_sem_juice (para threshold interno)
+            # Configurações Otimizadas por Mercado
+            MARKET_CONFIGS = {
+                'Casa': {'min_odd': 1.20, 'max_odd': 2.50, 'min_ev': 0.07, 'min_prob': 0.40},
+                'Empate': {'min_odd': 2.50, 'max_odd': 4.00, 'min_ev': 0.07, 'min_prob': 0.00},
+                'Fora': {'min_odd': 2.00, 'max_odd': 3.50, 'min_ev': 0.10, 'min_prob': 0.00}
+            }
+
+            def calcular_valor(mercado_nome, odd_mercado, odd_justa, edge_display, edge_filtro, prob_ia):
+                """Calcula valor com filtros rigorosos por mercado baseados no backtest.
+                prob_ia: Probabilidade fracionária predita pela IA (0.0 a 1.0)
                 """
                 if odd_justa <= 0 or not odd_mercado:
                     return {'tem': False, 'margem': 0.0, 'nivel': '', 'edge': 0.0, 'confiavel': False}
                 
                 margem_pct = ((odd_mercado / odd_justa) - 1) * 100
+                config = MARKET_CONFIGS.get(mercado_nome)
                 
-                # Filtros baseados no backtest:
-                # 1. Margem mínima de 7% (já existia)
-                # 2. Edge filtro vs mercado >= 3% (prob_IA vs prob_sem_juice)
-                # 3. Odd máxima 3.50 (novo — odds altas têm -28% yield no backtest)
-                # 4. Empate desabilitado (amostra insuficiente: 22 apostas)
-                tem_valor = (
-                    margem_pct >= 7.0 and
-                    edge_filtro >= 3.0 and
-                    odd_mercado <= 3.50 and
-                    mercado_nome != 'Empate'
-                )
+                tem_valor = False
+                if config:
+                    ev_frac = margem_pct / 100.0
+                    tem_valor = (
+                        (prob_ia / 100.0) >= config['min_prob'] and  # prob_ia vem como porcentagem do dict (ex: 45.5), ajustando para fração
+                        config['min_odd'] <= odd_mercado <= config['max_odd'] and
+                        ev_frac >= config['min_ev'] and
+                        edge_filtro >= 3.0
+                    )
                 
                 # Nível de confiança baseado nas faixas de EV do backtest
                 if not tem_valor:
@@ -263,11 +267,11 @@ def analise_jogo(request):
 
             ia = preds
             context['valor_h'] = calcular_valor('Casa', odd_h, ia.get('odd_justa_casa', 0),
-                ia.get('edge_casa', 0), ia.get('edge_filtro_casa', 0))
+                ia.get('edge_casa', 0), ia.get('edge_filtro_casa', 0), ia.get('prob_casa', 0))
             context['valor_d'] = calcular_valor('Empate', odd_d, ia.get('odd_justa_empate', 0),
-                ia.get('edge_empate', 0), ia.get('edge_filtro_empate', 0))
+                ia.get('edge_empate', 0), ia.get('edge_filtro_empate', 0), ia.get('prob_empate', 0))
             context['valor_a'] = calcular_valor('Fora', odd_a, ia.get('odd_justa_fora', 0),
-                ia.get('edge_fora', 0), ia.get('edge_filtro_fora', 0))
+                ia.get('edge_fora', 0), ia.get('edge_filtro_fora', 0), ia.get('prob_fora', 0))
             
             print(f"✅ Resultado IA: {preds}")
         except Exception as e:
