@@ -50,8 +50,8 @@ def calcular_probabilidades_ia(
     peso_recente: int = 50,
     data_alvo: str = None
 ):
-    # Caching predictions
-    cache_key_str = f"ia_pred_{home}_{away}_{liga}_{odd_h}_{odd_d}_{odd_a}_{peso_recente}_{df_historico.shape}"
+    # Caching predictions (versão v3 para invalidar cache antigo)
+    cache_key_str = f"ia_pred_v3_{home}_{away}_{liga}_{odd_h}_{odd_d}_{odd_a}_{peso_recente}_{df_historico.shape}"
     cache_key = f"ia_pred_{hashlib.md5(cache_key_str.encode()).hexdigest()}"
     cached_res = cache.get(cache_key)
     if cached_res:
@@ -98,23 +98,31 @@ def calcular_probabilidades_ia(
         features['away_gols_pro_rel'] = adj_a_gols / base_gols
         features['diff_gols_pro'] = adj_h_gols - adj_a_gols
 
-        # 2. Resultado Num (Forma) - Diferencial apenas
+        # 2. Resultado Num (Forma)
         adj_h_res = stats_home['resultado_num'] * factor
         adj_a_res = stats_away['resultado_num'] * factor
+        features['home_resultado_num'] = adj_h_res
+        features['away_resultado_num'] = adj_a_res
         features['diff_resultado_num'] = adj_h_res - adj_a_res
 
-        # 3. Eficiência e Perigo (Diferenciais apenas)
+        # 3. Eficiência e Perigo
         adj_h_efic = stats_home['eficiencia_ofensiva'] * factor
         adj_a_efic = stats_away['eficiencia_ofensiva'] * factor
+        features['home_eficiencia_ofensiva'] = adj_h_efic
+        features['away_eficiencia_ofensiva'] = adj_a_efic
         features['diff_eficiencia_ofensiva'] = adj_h_efic - adj_a_efic
 
         adj_h_perigo = stats_home['perigo_defensivo'] * factor
         adj_a_perigo = stats_away['perigo_defensivo'] * factor
+        features['home_perigo_defensivo'] = adj_h_perigo
+        features['away_perigo_defensivo'] = adj_a_perigo
         features['diff_perigo_defensivo'] = adj_h_perigo - adj_a_perigo
 
-        # 4. xG Estimado (Diferencial apenas)
+        # 4. xG Estimado
         adj_h_xg = stats_home['xG_estimado'] * factor
         adj_a_xg = stats_away['xG_estimado'] * factor
+        features['home_xG_estimado'] = adj_h_xg
+        features['away_xG_estimado'] = adj_a_xg
         features['diff_xG_estimado'] = adj_h_xg - adj_a_xg
 
         # 5. Probabilidades Justas (sem juice)
@@ -122,6 +130,11 @@ def calcular_probabilidades_ia(
         features['prob_justa_h'] = p_h_j
         features['prob_justa_d'] = p_d_j
         features['prob_justa_a'] = p_a_j
+        
+        # 6. Odds Brutas (Requerido pelo Modelo V3)
+        features['Odd_H'] = odd_h
+        features['Odd_D'] = odd_d
+        features['Odd_A'] = odd_a
 
         # Debug para verificar se estamos caindo no fallback ou calculando features reais
         print(f"📊 IA Features ({home} vs {away}): Prob Justa H={p_h_j:.4f}, factor={factor}")
